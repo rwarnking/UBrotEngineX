@@ -20,12 +20,10 @@
 // MY CLASS INCLUDES //
 ///////////////////////
 
-
-/////////////
-// GLOBALS //
-/////////////
-
-
+namespace ubrot
+{
+namespace graphics
+{
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Class name: ShaderLoader
 /// This class loads all needed shaders which can be used by calling the \c Render function.
@@ -110,6 +108,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pixelShader;
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_layout;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_matrixBuffer;
+};
+};
 };
 
 #endif

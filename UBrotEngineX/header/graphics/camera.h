@@ -11,9 +11,12 @@
 #include <fstream>
 #include <math.h>
 #include <directxmath.h>
-using namespace DirectX;
 
 
+namespace ubrot
+{
+namespace graphics
+{
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Class name: Camera
 /// The camera class represents a virtual camera with a position and rotation. This camera
@@ -99,12 +102,12 @@ public:
 	 * Returns the current camera position.
 	 * @return XMFLOAT3
 	 */
-	XMFLOAT3 GetPosition();
+	DirectX::XMFLOAT3 GetPosition();
 	/**
 	* Returns the current camera rotation.
 	 * @return XMFLOAT3
 	 */
-	XMFLOAT3 GetRotation();
+	DirectX::XMFLOAT3 GetRotation();
 
 	/**
 	 * Computes the view matrix using \c XMMatrixLookAtLH, the camera position and camera
@@ -115,7 +118,7 @@ public:
 	 * Copies the computed view matrix into the parameter \p viewMatrix to be used elsewhere.
 	 * param[out] viewMatrix
 	 */
-	void GetViewMatrix(XMMATRIX& viewMatrix);
+	void GetViewMatrix(DirectX::XMMATRIX& viewMatrix);
 
 	/**
 	 * Computes the reflection matrix using \c XMMatrixLookAtLH, the camera position and camera
@@ -128,7 +131,7 @@ public:
 	 * Copies the computed reflection matrix into the parameter \p viewMatrix to be used elsewhere.
 	 * param[out] reflection_matrix
 	 */
-	void GetReflectionMatrix(XMMATRIX& reflectionMatrix);
+	void GetReflectionMatrix(DirectX::XMMATRIX& reflectionMatrix);
 
 	/**
 	 * Computes the base view matrix using \c XMMatrixLookAtLH, the camera position and camera
@@ -141,7 +144,7 @@ public:
 	 * to be used elsewhere.
 	 * param[out] baseViewMatrix
 	 */
-	void GetBaseViewMatrix(XMMATRIX& baseViewMatrix);
+	void GetBaseViewMatrix(DirectX::XMMATRIX& baseViewMatrix);
 
 private:
 	float m_frameTime;
@@ -150,7 +153,10 @@ private:
 
 	float m_positionX, m_positionY, m_positionZ;
 	float m_rotationX, m_rotationY, m_rotationZ;
-	XMMATRIX m_viewMatrix, m_baseViewMatrix, m_reflection_matrix;
+	DirectX::XMMATRIX m_viewMatrix, m_baseViewMatrix, m_reflection_matrix;
+};
+
+};
 };
 
 #endif

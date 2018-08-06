@@ -8,6 +8,9 @@
 
 using namespace std;
 
+namespace ubrot
+{
+
 Game::Game()
 {
 	m_renderer = nullptr;
@@ -40,7 +43,7 @@ bool Game::Initialize()
 #
 
 	// Create and initialize a renderer object used to render scenes
-	m_renderer = std::make_unique<Renderer>();//new Renderer();
+	m_renderer = std::make_unique<graphics::Renderer>();//new Renderer();
 	if (!m_renderer)
 	{
 		return false;
@@ -283,23 +286,25 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 	switch (umessage)
 	{
 		// Check if the window is being destroyed.
-		case WM_DESTROY:
-		{
-			PostQuitMessage(0);
-			return 0;
-		}
-
-		// Check if the window is being closed.
-		case WM_CLOSE:
-		{
-			PostQuitMessage(0);
-			return 0;
-		}
-
-		// Pass all other messages to the message handler.
-		default:
-		{
-			return DefWindowProc(hwnd, umessage, wparam, lparam);
-		}
+	case WM_DESTROY:
+	{
+		PostQuitMessage(0);
+		return 0;
 	}
+
+	// Check if the window is being closed.
+	case WM_CLOSE:
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
+
+	// Pass all other messages to the message handler.
+	default:
+	{
+		return DefWindowProc(hwnd, umessage, wparam, lparam);
+	}
+	}
+}
+
 }

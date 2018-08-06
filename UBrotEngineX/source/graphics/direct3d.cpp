@@ -5,6 +5,10 @@
 
 using namespace DirectX;
 
+namespace ubrot
+{
+namespace graphics
+{
 
 Direct3D::Direct3D()
 {
@@ -148,8 +152,8 @@ bool Direct3D::Initialize(
 	// denominator are stored to determine the refresh rate later on.
 	for (unsigned int i = 0; i < numModes; i++)
 	{
-		if (displayModeList[i].Width == (unsigned int) screenWidth &&
-			displayModeList[i].Height == (unsigned int) screenHeight)
+		if (displayModeList[i].Width == (unsigned int)screenWidth &&
+			displayModeList[i].Height == (unsigned int)screenHeight)
 		{
 			numerator = displayModeList[i].RefreshRate.Numerator;
 			denominator = displayModeList[i].RefreshRate.Denominator;
@@ -772,4 +776,7 @@ void Direct3D::ResetViewport()
 	m_deviceContext->RSSetViewports(2, &m_viewport);
 
 	return;
+}
+
+}
 }

@@ -25,7 +25,8 @@
 #include "graphics/renderer.h"
 #include "timer.h"
 
-
+namespace ubrot
+{
 /////////////
 // GLOBALS //
 /////////////
@@ -77,7 +78,7 @@ private:
 	 * screen resolution and stores them in \p screenWidth and \p screenHeight. The constructed
 	 * window is borderless and (depending on the settings) is either set to fullscreen or a
 	 * 800x600 window.
-     * @param[out] screenWidth
+	 * @param[out] screenWidth
 	 * @param[out] screenHeight
 	 */
 	void InitializeWindows(int& screenWidth, int& screenHeight);
@@ -91,7 +92,7 @@ private:
 	HINSTANCE m_hinstance;
 	HWND m_hwnd;
 
-	std::unique_ptr<Renderer> m_renderer;
+	std::unique_ptr<graphics::Renderer> m_renderer;
 	std::unique_ptr<Scene> m_scene;
 	std::unique_ptr<Timer> m_timer;
 };
@@ -115,5 +116,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM 
 // GLOBALS //
 /////////////
 static Game* ApplicationHandle = 0;
+
+};
 
 #endif

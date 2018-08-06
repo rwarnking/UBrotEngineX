@@ -22,6 +22,8 @@
 #include "shaderloader.h"
 
 
+namespace ubrot
+{
 /////////////
 // GLOBALS //
 /////////////
@@ -30,7 +32,8 @@ const bool FULL_SCREEN = false;
 extern float SCREEN_DEPTH;
 extern float SCREEN_NEAR;
 
-
+namespace graphics
+{
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Class name: Renderer
 /// The renderer is used to initiate rendering of all entities in the scene and supports
@@ -82,6 +85,8 @@ private:
 private:
 	std::unique_ptr<Direct3D> m_direct3d;
 	std::unique_ptr<ShaderLoader> m_colorShader;
+};
+};
 };
 
 #endif

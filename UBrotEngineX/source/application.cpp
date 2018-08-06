@@ -28,7 +28,7 @@ int WINAPI WinMain(
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CrtSetBreakAlloc(1282);
 
-	auto game = std::make_unique<Game>();
+	auto game = std::make_unique<ubrot::Game>();
 	bool result;
 
 

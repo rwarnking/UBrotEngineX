@@ -5,6 +5,10 @@
 
 using namespace DirectX;
 
+namespace ubrot
+{
+namespace graphics
+{
 
 Model::Model()
 {
@@ -183,4 +187,7 @@ XMFLOAT3 Model::GetScale()
 XMFLOAT3 Model::GetRadius()
 {
 	return m_radius;
+}
+
+}
 }

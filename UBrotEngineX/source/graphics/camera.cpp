@@ -3,6 +3,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #include "../../header/graphics/camera.h"
 
+using namespace DirectX;
+
+namespace ubrot
+{
+namespace graphics
+{
 
 Camera::Camera()
 {
@@ -431,4 +437,7 @@ void Camera::GetBaseViewMatrix(XMMATRIX& baseViewMatrix)
 {
 	baseViewMatrix = m_baseViewMatrix;
 	return;
+}
+
+}
 }

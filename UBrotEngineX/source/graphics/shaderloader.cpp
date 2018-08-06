@@ -5,6 +5,11 @@
 
 using namespace DirectX;
 
+namespace ubrot
+{
+namespace graphics
+{
+
 ShaderLoader::ShaderLoader()
 {
 	m_vertexShader = nullptr;
@@ -248,4 +253,7 @@ void ShaderLoader::OutputShaderErrorMessage(
 	);
 
 	return;
+}
+
+}
 }

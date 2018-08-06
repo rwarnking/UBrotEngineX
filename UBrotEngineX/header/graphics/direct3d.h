@@ -21,6 +21,10 @@
 #include <wrl\client.h>
 
 
+namespace ubrot
+{
+namespace graphics
+{
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Class name: Direct3D
 /// The Direct3D class contains all components needed to use Direct3D.
@@ -183,6 +187,8 @@ private:
 	DirectX::XMMATRIX m_projectionMatrix;
 	DirectX::XMMATRIX m_worldMatrix;
 	DirectX::XMMATRIX m_orthoMatrix;
+};
+};
 };
 
 #endif

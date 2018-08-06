@@ -10,7 +10,8 @@
 //////////////
 #include <windows.h>
 
-
+namespace ubrot
+{
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Class name: Timer
 /// The timer class serves to accurately measure the time it took to complete a frame. This is
@@ -54,6 +55,7 @@ private:
 	float m_ticksPerMS;
 	INT64 m_startTime;
 	float m_frameTime;
+};
 };
 
 #endif

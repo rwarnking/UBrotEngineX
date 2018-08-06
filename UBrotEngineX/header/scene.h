@@ -17,10 +17,8 @@
 #include "graphics/camera.h"
 #include "graphics/model.h"
 
-/////////////
-// GLOBALS //
-/////////////
-
+namespace ubrot
+{
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Class name: Scene
@@ -53,16 +51,17 @@ public:
 	 * Returns this scene's main camera.
 	 * @return reference to m_camera
 	 */
-	Camera& GetCamera();
+	graphics::Camera& GetCamera();
 	/**
 	 * TODO: remove this in the future/adjust for tiles etc.
 	 * @return reference to m_model
 	 */
-	Model& GetModel();
+	graphics::Model& GetModel();
 
 private:
-	std::unique_ptr<Camera> m_camera;
-	std::unique_ptr<Model> m_model;
+	std::unique_ptr<graphics::Camera> m_camera;
+	std::unique_ptr<graphics::Model> m_model;
+};
 };
 
 #endif

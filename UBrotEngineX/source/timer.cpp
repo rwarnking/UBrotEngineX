@@ -3,6 +3,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #include "../header/timer.h"
 
+namespace ubrot
+{
 
 Timer::Timer()
 {
@@ -63,4 +65,6 @@ void Timer::Frame()
 float Timer::GetTime()
 {
 	return m_frameTime;
+}
+
 }

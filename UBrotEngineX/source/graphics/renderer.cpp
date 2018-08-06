@@ -3,6 +3,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #include "../../header/graphics/renderer.h"
 
+using namespace DirectX;
+
+namespace ubrot
+{
+namespace graphics
+{
 
 Renderer::Renderer()
 {
@@ -74,7 +80,7 @@ bool Renderer::Process(Scene &scene)
 	bool result;
 
 
-    Camera &camera = scene.GetCamera(); // TODO
+	Camera &camera = scene.GetCamera(); // TODO
 	camera.Render();
 
 	// Clear the buffers
@@ -115,4 +121,7 @@ bool Renderer::RenderScene(Scene &scene, Camera &camera)
 Direct3D& Renderer::GetD3D()
 {
 	return *m_direct3d;
+}
+
+}
 }

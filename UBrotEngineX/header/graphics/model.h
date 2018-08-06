@@ -18,12 +18,10 @@
 ///////////////////////
 #include "direct3d.h"
 
-
-/////////////
-// GLOBALS //
-/////////////
-
-
+namespace ubrot
+{
+namespace graphics
+{
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Class name: Model
 /// The model class stores all relevant information related to an 3D entity, like the
@@ -113,6 +111,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertexBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_indexBuffer;
 	int m_vertexCount, m_indexCount;
+};
+};
 };
 
 #endif
