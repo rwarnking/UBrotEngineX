@@ -120,17 +120,22 @@ public:
 	 * Copies the projection matrix to \p projectionMatrix.
 	 * @param[out] projectionMatrix
 	 */
-	void GetProjectionMatrix(DirectX::XMMATRIX &projectionMatrix) const;
-	/**
-	 * Copies the world matrix to \p worldMatrix.
-	 * @param[out] worldMatrix
-	 */
-	void GetWorldMatrix(DirectX::XMMATRIX &worldMatrix) const;
-	/**
-	 * Copies the orthographic matrix to \p orthoMatrix.
-	 * @param[out] orthoMatrix
-	 */
-	void GetOrthoMatrix(DirectX::XMMATRIX &orthoMatrix) const;
+	//void GetProjectionMatrix(DirectX::XMMATRIX &projectionMatrix) const;
+	///**
+	// * Copies the world matrix to \p worldMatrix.
+	// * @param[out] worldMatrix
+	// */
+	//void GetWorldMatrix(DirectX::XMMATRIX &worldMatrix) const;
+	///**
+	// * Copies the orthographic matrix to \p orthoMatrix.
+	// * @param[out] orthoMatrix
+	// */
+	//void GetOrthoMatrix(DirectX::XMMATRIX &orthoMatrix) const;
+
+	DirectX::XMMATRIX GetProjectionMatrix() const;
+	DirectX::XMMATRIX GetWorldMatrix() const;
+	DirectX::XMMATRIX GetOrthoMatrix() const;
+
 
 	/**
 	 * Copies the video card description into \p cardName and the video card memory to \memory.

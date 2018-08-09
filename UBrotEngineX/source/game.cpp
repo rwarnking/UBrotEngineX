@@ -38,6 +38,8 @@ bool Game::Initialize()
 	screenWidth = 0;
 	screenHeight = 0;
 
+	auto start = std::chrono::system_clock::now();
+
 	// Prepare the application's window and store the width and height of the window
 	InitializeWindows(screenWidth, screenHeight);
 #
@@ -84,6 +86,10 @@ bool Game::Initialize()
 		return false;
 	}
 
+	auto end = chrono::system_clock::now();
+	auto sum = chrono::duration_cast<chrono::milliseconds>(end - start).count();
+
+	MessageBox(m_hwnd, std::to_wstring(sum).c_str(), L"Initialization time in ms", MB_OK);
 
 	return true;
 }

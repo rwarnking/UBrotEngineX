@@ -118,7 +118,7 @@ public:
 	 * Copies the computed view matrix into the parameter \p viewMatrix to be used elsewhere.
 	 * param[out] viewMatrix
 	 */
-	void GetViewMatrix(DirectX::XMMATRIX& viewMatrix);
+	DirectX::XMMATRIX GetViewMatrix();
 
 	/**
 	 * Computes the reflection matrix using \c XMMatrixLookAtLH, the camera position and camera

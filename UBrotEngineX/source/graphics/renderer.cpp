@@ -97,22 +97,68 @@ bool Renderer::Process(Scene &scene)
 
 bool Renderer::RenderScene(Scene &scene, Camera &camera)
 {
-	XMMATRIX /*, baseViewMatrix, */viewMatrix, projectionMatrix, worldMatrix;//, orthoMatrix;
 	bool result;
 
 
 	// Get the nessessary matrices from the camera and the direct3d object.
-	camera.GetViewMatrix(viewMatrix);
-	m_direct3d->GetWorldMatrix(worldMatrix);
-	m_direct3d->GetProjectionMatrix(projectionMatrix);
+	auto viewMatrix = camera.GetViewMatrix();
+	auto worldMatrix = m_direct3d->GetWorldMatrix();
+	auto projectionMatrix = m_direct3d->GetProjectionMatrix();
 
 	// Render all entities in the scene
-	scene.GetModel().Render(m_direct3d->GetDeviceContext());
-	result = m_colorShader->Render(
-		m_direct3d->GetDeviceContext(),
-		worldMatrix, viewMatrix, projectionMatrix,
-		scene.GetModel().GetIndexCount()
-	);
+	for (auto& tile : scene.GetTiles())
+	{
+		/*
+		for (auto& model : tile.GetModels())
+		{
+			model.Render(m_direct3d->GetDeviceContext());
+			result = m_colorShader->Render(
+				m_direct3d->GetDeviceContext(),
+				worldMatrix, viewMatrix, projectionMatrix,
+				model.GetIndexCount()
+			);
+		}*/
+
+		// On the first iteration, systems are not applied to entities because
+		// the entity size of the manager is only updated at the end of the frame,
+		// and we only iterate over _size_ entities,
+
+		auto& mgr = tile.GetManager();
+		auto& model = tile.GetModels(); // wo sollen die Models hin ? Por scene ? pro Tile ?
+		/*
+		mgr.forEntitiesMatching<ecs::STransform>(
+			[&](auto index, auto& cTransform)
+		{
+			// Transform the Object.
+			worldMatrix = XMMatrixMultiply(
+				XMMatrixMultiply(
+					XMMatrixScaling(cTransform.scale.x, cTransform.scale.y, cTransform.scale.z),
+					XMMatrixRotationRollPitchYaw(cTransform.rotation.x, cTransform.rotation.y, cTransform.rotation.z)),
+				XMMatrixTranslation(cTransform.position.x, cTransform.position.y, cTransform.position.z)
+			);
+		});*/
+
+		// First parameter is the entity index
+		mgr.forEntitiesMatching<ecs::SRenderColor>(
+			[&](auto index, auto& cModel, auto& cTransform, auto& cColor)
+		{
+			// Transform the Object.
+			worldMatrix = XMMatrixMultiply(
+				XMMatrixMultiply(
+					XMMatrixScaling(cTransform.scale.x, cTransform.scale.y, cTransform.scale.z),
+					XMMatrixRotationRollPitchYaw(cTransform.rotation.x, cTransform.rotation.y, cTransform.rotation.z)),
+				XMMatrixTranslation(cTransform.position.x, cTransform.position.y, cTransform.position.z)
+			);
+
+			model[cModel.index].Render(m_direct3d->GetDeviceContext());
+			result = m_colorShader->Render(m_direct3d->GetDeviceContext(),
+				worldMatrix, viewMatrix, projectionMatrix, model[cModel.index].GetIndexCount());
+		});
+
+		tile.Refresh();
+
+	}
+
 
 	return result;
 }

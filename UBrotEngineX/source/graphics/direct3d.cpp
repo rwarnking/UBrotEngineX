@@ -637,24 +637,42 @@ IDXGISwapChain* Direct3D::GetSwapChain() const
 }
 
 
-void Direct3D::GetProjectionMatrix(XMMATRIX &projectionMatrix) const
+//void Direct3D::GetProjectionMatrix(XMMATRIX &projectionMatrix) const
+//{
+//	projectionMatrix = m_projectionMatrix;
+//	return;
+//}
+//
+//
+//void Direct3D::GetWorldMatrix(XMMATRIX &worldMatrix) const
+//{
+//	worldMatrix = m_worldMatrix;
+//	return;
+//}
+//
+//
+//void Direct3D::GetOrthoMatrix(XMMATRIX &orthoMatrix) const
+//{
+//	orthoMatrix = m_orthoMatrix;
+//	return;
+//}
+
+
+DirectX::XMMATRIX Direct3D::GetProjectionMatrix() const
 {
-	projectionMatrix = m_projectionMatrix;
-	return;
+	return m_projectionMatrix;
 }
 
 
-void Direct3D::GetWorldMatrix(XMMATRIX &worldMatrix) const
+DirectX::XMMATRIX Direct3D::GetWorldMatrix() const
 {
-	worldMatrix = m_worldMatrix;
-	return;
+	return m_worldMatrix;
 }
 
 
-void Direct3D::GetOrthoMatrix(XMMATRIX &orthoMatrix) const
+DirectX::XMMATRIX Direct3D::GetOrthoMatrix() const
 {
-	orthoMatrix = m_orthoMatrix;
-	return;
+	return m_orthoMatrix;
 }
 
 

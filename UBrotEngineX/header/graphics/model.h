@@ -18,6 +18,7 @@
 ///////////////////////
 #include "direct3d.h"
 
+
 namespace ubrot
 {
 namespace graphics

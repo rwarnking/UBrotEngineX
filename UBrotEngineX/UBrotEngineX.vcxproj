@@ -28,9 +28,13 @@
     <ClCompile Include="source\graphics\renderer.cpp" />
     <ClCompile Include="source\graphics\shaderloader.cpp" />
     <ClCompile Include="source\scene.cpp" />
+    <ClCompile Include="source\tile.cpp" />
     <ClCompile Include="source\timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="header\ecs\defs.h" />
+    <ClInclude Include="header\ecs\manager.h" />
+    <ClInclude Include="header\ecs\settings.h" />
     <ClInclude Include="header\game.h" />
     <ClInclude Include="header\graphics\camera.h" />
     <ClInclude Include="header\graphics\direct3d.h" />
@@ -38,6 +42,7 @@
     <ClInclude Include="header\graphics\renderer.h" />
     <ClInclude Include="header\graphics\shaderloader.h" />
     <ClInclude Include="header\scene.h" />
+    <ClInclude Include="header\tile.h" />
     <ClInclude Include="header\timer.h" />
   </ItemGroup>
   <ItemGroup>
@@ -98,15 +103,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

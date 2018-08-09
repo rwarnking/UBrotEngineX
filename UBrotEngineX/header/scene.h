@@ -15,7 +15,10 @@
 // MY CLASS INCLUDES //
 ///////////////////////
 #include "graphics/camera.h"
-#include "graphics/model.h"
+//#include "graphics/model.h"
+#include "tile.h"
+//#include "entityloader.h"
+
 
 namespace ubrot
 {
@@ -53,14 +56,14 @@ public:
 	 */
 	graphics::Camera& GetCamera();
 	/**
-	 * TODO: remove this in the future/adjust for tiles etc.
-	 * @return reference to m_model
+	 * TODO: check if compatible with DOD
+	 * @return reference to tile
 	 */
-	graphics::Model& GetModel();
+	std::vector<Tile>& GetTiles();
 
 private:
 	std::unique_ptr<graphics::Camera> m_camera;
-	std::unique_ptr<graphics::Model> m_model;
+	std::vector<Tile> m_tiles;
 };
 };
 

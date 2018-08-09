@@ -3,6 +3,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #include "../../header/graphics/model.h"
 
+#include <vector>
+
 using namespace DirectX;
 
 namespace ubrot
@@ -12,7 +14,7 @@ namespace graphics
 
 Model::Model()
 {
-	m_position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	m_position = XMFLOAT3(10.0f, 0.0f, 0.0f);
 	m_rotation = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	m_scale = XMFLOAT3(1.0f, 1.0f, 1.0f);
 	m_radius = XMFLOAT3(1.0f, 1.0f, 1.0);
@@ -51,15 +53,16 @@ bool Model::InitializeBuffers(ID3D11Device* device)
 	HRESULT result;
 
 
-	int vertexCount = 3;
-	int indexCount = 3;
+	const int vertexCount = 3;
+	const int indexCount = 3;
 
 	m_vertexCount = vertexCount;
 	m_indexCount = indexCount;
 
 	// Allocate temporary arrays for vertex and index data
-	ColVertex* vertices = new ColVertex[vertexCount];
-	unsigned long* indices = new unsigned long[indexCount];
+	//ColVertex* vertices = nullptr;
+	auto vertices = new ColVertex[vertexCount];
+	auto indices = new unsigned long[indexCount];
 
 	// Fill the vertex array (triangle)
 	// Bottom left

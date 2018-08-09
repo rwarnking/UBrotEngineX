@@ -22,6 +22,9 @@
     <Filter Include="Shader">
       <UniqueIdentifier>{d536a70a-2d54-40d3-9a78-9fedce7d7e89}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\ECS">
+      <UniqueIdentifier>{6f395d6e-c146-4ba5-8413-f140f6b6ed32}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\application.cpp">
@@ -54,6 +57,9 @@
     <ClCompile Include="source\graphics\model.cpp">
       <Filter>Quelldateien\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="source\tile.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\game.h">
@@ -79,6 +85,18 @@
     </ClInclude>
     <ClInclude Include="header\graphics\model.h">
       <Filter>Headerdateien\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="header\tile.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="header\ecs\manager.h">
+      <Filter>Headerdateien\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="header\ecs\defs.h">
+      <Filter>Headerdateien\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="header\ecs\settings.h">
+      <Filter>Headerdateien\ECS</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

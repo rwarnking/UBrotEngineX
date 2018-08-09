@@ -3,7 +3,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #include "../header/game.h"
 
-
 #define _CRTDBG_MAP_ALLOC #include <stdlib.h> #include <crtdbg.h>
 /*
 #define _CRTDBG_MAP_ALLOC
@@ -18,7 +17,6 @@
 #define DBG_NEW new
 #endif
 
-
 int WINAPI WinMain(
 	_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -30,7 +28,6 @@ int WINAPI WinMain(
 
 	auto game = std::make_unique<ubrot::Game>();
 	bool result;
-
 
 	// Erzeuge das game Objekt in dem der game-loop zu finden ist
 	//game = new Game;
