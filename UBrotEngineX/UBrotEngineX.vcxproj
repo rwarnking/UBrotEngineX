@@ -24,9 +24,10 @@
     <ClCompile Include="source\globals.cpp" />
     <ClCompile Include="source\graphics\camera.cpp" />
     <ClCompile Include="source\graphics\direct3d.cpp" />
-    <ClCompile Include="source\graphics\model.cpp" />
     <ClCompile Include="source\graphics\renderer.cpp" />
     <ClCompile Include="source\graphics\shaderloader.cpp" />
+    <ClCompile Include="source\io\assetloader.cpp" />
+    <ClCompile Include="source\io\loader.cpp" />
     <ClCompile Include="source\scene.cpp" />
     <ClCompile Include="source\tile.cpp" />
     <ClCompile Include="source\timer.cpp" />
@@ -38,9 +39,11 @@
     <ClInclude Include="header\game.h" />
     <ClInclude Include="header\graphics\camera.h" />
     <ClInclude Include="header\graphics\direct3d.h" />
-    <ClInclude Include="header\graphics\model.h" />
     <ClInclude Include="header\graphics\renderer.h" />
     <ClInclude Include="header\graphics\shaderloader.h" />
+    <ClInclude Include="header\graphics\vertextypes.h" />
+    <ClInclude Include="header\io\assetloader.h" />
+    <ClInclude Include="header\io\loader.h" />
     <ClInclude Include="header\scene.h" />
     <ClInclude Include="header\tile.h" />
     <ClInclude Include="header\timer.h" />
@@ -103,19 +106,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>D:\06_Programme\cpplibs;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>D:\06_Programme\cpplibs;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>D:\06_Programme\cpplibs;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>D:\06_Programme\cpplibs;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -123,7 +126,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -137,7 +140,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>

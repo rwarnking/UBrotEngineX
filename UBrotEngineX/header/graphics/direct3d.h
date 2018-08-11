@@ -196,4 +196,4 @@ private:
 };
 };
 
-#endif
+#endif // !_DIRECT3D_H_

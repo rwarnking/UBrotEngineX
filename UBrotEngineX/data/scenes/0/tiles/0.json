@@ -1,0 +1,32 @@
+{
+    "entities": [
+        {
+            "hash": 1,
+            "components": {
+                "model": 0,
+                "transform": {
+                    "pos": [1.0, 1.0, 0.0],
+                    "rot": [0.0, 0.0, 0.0],
+                    "scale": [0.0, 0.0, 0.0]
+                }
+            },
+            "tags": [
+                "color"
+            ]
+        },
+        {
+            "hash": 1,
+            "components": {
+                "model": 0,
+                "transform": {
+                    "pos": [-1.0, -1.0, 0.0],
+                    "rot": [0.0, 0.0, 0.0],
+                    "scale": [0.0, 0.0, 0.0]
+                }
+            },
+            "tags": [
+                "color"
+            ]
+        }
+    ]
+}
