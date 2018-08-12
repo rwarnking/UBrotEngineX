@@ -74,7 +74,7 @@ SceneMeta LoadSceneMeta(int sceneID=0);
 bool LoadEntities(ecs::Manager<ecs::MySettings> &mgr, AssetFiles &bits);
 
 // TODO sceneID
-std::vector<graphics::vertices::Model> LoadModel(BitVec &modelBits, ID3D11Device *device, int sceneID = 0);
+std::vector<graphics::vertices::Model> LoadModels(BitVec &modelBits, ID3D11Device *device, int sceneID = 0);
 
 };
 };

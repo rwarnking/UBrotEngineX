@@ -24,7 +24,8 @@ int WINAPI WinMain(
 	_In_ int iCmdshow)
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	_CrtSetBreakAlloc(1282);
+	// NuR ZUM TESTEN an der entsprechenden Speicherlocation
+	//_CrtSetBreakAlloc(1282);
 
 	auto game = std::make_unique<ubrot::Game>();
 	bool result;

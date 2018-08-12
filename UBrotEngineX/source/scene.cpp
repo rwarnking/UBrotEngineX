@@ -38,7 +38,7 @@ bool Scene::Initialize(ID3D11Device* device)
 		return false;
 	}
 
-	m_camera->SetPosition(0.0f, 0.0f, -10.0f);
+	m_camera->SetPosition(0.0f, 0.0f, -30.0f);
 	m_camera->RenderBaseViewMatrix();
 
 	// TODO: see if initialization should happen in a constructor
@@ -62,7 +62,7 @@ bool Scene::Initialize(ID3D11Device* device)
 			return false;
 	}
 	// Lade essests TODO
-	m_models = io::LoadModel(assetBits.modelFiles, device);
+	m_models = io::LoadModels(assetBits.modelFiles, device);
 
 	return true;
 }

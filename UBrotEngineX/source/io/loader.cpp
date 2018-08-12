@@ -26,14 +26,13 @@
 #define FILE_TEX "textures.txt"
 #define FILE_AUDIO "audio.txt"
 
-// "D:/07_Projekte/UBrotEngineX/UBrotEngineX/data/scenes/0/models.txt"
-
 namespace ubrot
 {
 namespace io
 {
 
 namespace rj = rapidjson;
+namespace gv = graphics::vertices;
 
 inline std::string GetPathScenes(int sceneID, const char* last)
 {
@@ -42,6 +41,13 @@ inline std::string GetPathScenes(int sceneID, const char* last)
 	return ss.str();
 }
 
+inline std::string GetFileTile(int sceneID, int tileID)
+{
+	std::stringstream ss;
+	ss << DIR_ROOT << DIR_SCENES << std::to_string(sceneID);
+	ss << '/' << DIR_TILES << std::to_string(tileID) << ".json";
+	return ss.str();
+}
 
 inline std::string GetPathAssets(const char* last)
 {
@@ -59,14 +65,6 @@ inline std::string GetFileAssets(const char* dir, const char* file)
 }
 
 
-inline std::string EntitiesPath(int sceneID, int tileID)
-{
-	std::stringstream ss;
-	ss << DIR_ROOT << DIR_SCENES << std::to_string(sceneID);
-	ss << '/' << DIR_TILES << std::to_string(tileID) << ".json";
-	return ss.str();
-}
-
 template <class T>
 void ParseComponents(
 	ecs::Manager<ecs::MySettings> &mgr,
@@ -80,7 +78,6 @@ void ParseComponents(
 		if (c.name == "transform")
 		{
 			auto& pos(mgr.addComponent<ecs::CTransform>(entity, ecs::CTransform()).position);
-			//pos = DirectX::XMFLOAT3(i - size / 2.0f, 0.0f, 0.0f);
 			auto tmp = c.value["pos"].GetArray();
 			pos = DirectX::XMFLOAT3(tmp[0].GetFloat(), tmp[1].GetFloat(), tmp[2].GetFloat());
 		}
@@ -89,6 +86,11 @@ void ParseComponents(
 		{
 			auto& model(mgr.addComponent<ecs::CModel>(entity).index);
 			model = c.value.GetInt();
+
+			// TODO: make this look prettier?
+			//		 make logger evaluate a condition, and if that does not hold then
+			//		 shut down the program properly and print an error message (somewhere)
+			assert(model < bits.modelFiles.size() && "Model count in scene meta is too small");
 
 			bits.modelFiles[model] = true;
 		}
@@ -127,7 +129,7 @@ SceneMeta LoadSceneMeta(int sceneID)
 bool LoadEntities(ecs::Manager<ecs::MySettings> &mgr, AssetFiles &bits)
 {
 	FILE *fp;
-	fopen_s(&fp, EntitiesPath(0, 0).c_str(), "rb");
+	fopen_s(&fp, GetFileTile(0, 0).c_str(), "rb");
 
 	char readBuffer[65536];
 	rj::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
@@ -148,16 +150,17 @@ bool LoadEntities(ecs::Manager<ecs::MySettings> &mgr, AssetFiles &bits)
 }
 
 
-std::vector<graphics::vertices::Model> LoadModel(BitVec &modelBits, ID3D11Device *device, int sceneID)
+std::vector<gv::Model> LoadModels(BitVec &modelBits, ID3D11Device *device, int sceneID)
 {
-	auto models = std::vector<graphics::vertices::Model>();
+	auto models = std::vector<gv::Model>();
+
+	auto tuple = ecs::MPL::Impl::TypeTuple<gv::VertexList>();
 
 	std::ifstream fin(GetPathScenes(sceneID, FILE_MODELS));
 	// Check if it was successful in opening the file.
 	if (fin.fail() == true)
 	{
-		// TODO logger wirf fehler
-		//return false;
+		// TODO: logger error and shutdown
 	}
 	for (auto i(0u); i < modelBits.size(); i++)
 	{
@@ -165,15 +168,18 @@ std::vector<graphics::vertices::Model> LoadModel(BitVec &modelBits, ID3D11Device
 			continue;
 
 		char name[256];
-		if (!(fin >> name))
+		std::size_t vertexIndex;
+		if (!(fin >> name >> vertexIndex))
 		{
-			// TODO logger wirf fehler
+			// TODO: handle reading error
 		}
-		//fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		models.emplace_back();
-		InitializeBuffers<graphics::vertices::ColVertex>(device, "", models.back());
-		// TODO fehlerbehandlung wenn nicht ladbar
+		auto load = [&](auto t) {
+			ubrot::io::LoadModel<ECS_TYPE(t)>(device, GetFileAssets(DIR_MODELS, name), models.back());
+		};
+		ecs::MPL::VisitAt(tuple, vertexIndex, load);
+
 	}
 
 	fin.close();
