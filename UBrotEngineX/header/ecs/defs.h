@@ -1,3 +1,4 @@
+#pragma once
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Filename: defs.h
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9,24 +10,24 @@
 // INCLUDES //
 //////////////
 #include <d3d11.h>
+#include <directxmath.h>
+
 
 ///////////////////////
 // MY CLASS INCLUDES //
 ///////////////////////
 #include "settings.h"
 
+
 namespace ecs
 {
 
+// Components
 struct CTransform
 {
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 rotation;
 	DirectX::XMFLOAT3 scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
-};
-struct CColor
-{
-	DirectX::XMFLOAT4 color;
 };
 struct CModel
 {
@@ -37,15 +38,19 @@ struct CTexture
 	std::size_t index;
 };
 
-using MyComponents = ComponentList<CTransform, CColor, CModel, CTexture>;
+using MyComponents = ComponentList<CTransform, CModel, CTexture>;
 
-using MyTags = TagList<>;
+// Tags
+struct TColor {};
+
+using MyTags = TagList<TColor>;
 
 using STransform = Signature<CTransform>;
-using SRenderColor = Signature<CModel, CTransform, CColor>;
+using SRender = Signature<CModel, CTransform>;
+using SRenderColor = Signature<CModel, CTransform, TColor>;
 using SRenderTex = Signature<CModel, CTransform, CTexture>;
 
-using MySignatures = SignatureList<SRenderColor, SRenderTex>;
+using MySignatures = SignatureList<STransform, SRender, SRenderColor, SRenderTex>;
 
 using MySettings = Settings<MyComponents, MyTags, MySignatures>;
 

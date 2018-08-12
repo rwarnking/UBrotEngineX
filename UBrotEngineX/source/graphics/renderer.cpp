@@ -105,6 +105,8 @@ bool Renderer::RenderScene(Scene &scene, Camera &camera)
 	auto worldMatrix = m_direct3d->GetWorldMatrix();
 	auto projectionMatrix = m_direct3d->GetProjectionMatrix();
 
+	auto& model = scene.GetModels();
+
 	// Render all entities in the scene
 	for (auto& tile : scene.GetTiles())
 	{
@@ -124,7 +126,6 @@ bool Renderer::RenderScene(Scene &scene, Camera &camera)
 		// and we only iterate over _size_ entities,
 
 		auto& mgr = tile.GetManager();
-		auto& model = tile.GetModels(); // wo sollen die Models hin ? Por scene ? pro Tile ?
 		/*
 		mgr.forEntitiesMatching<ecs::STransform>(
 			[&](auto index, auto& cTransform)
@@ -140,7 +141,7 @@ bool Renderer::RenderScene(Scene &scene, Camera &camera)
 
 		// First parameter is the entity index
 		mgr.forEntitiesMatching<ecs::SRenderColor>(
-			[&](auto index, auto& cModel, auto& cTransform, auto& cColor)
+			[&](auto index, auto& cModel, auto& cTransform)
 		{
 			// Transform the Object.
 			worldMatrix = XMMatrixMultiply(
@@ -150,9 +151,9 @@ bool Renderer::RenderScene(Scene &scene, Camera &camera)
 				XMMatrixTranslation(cTransform.position.x, cTransform.position.y, cTransform.position.z)
 			);
 
-			model[cModel.index].Render(m_direct3d->GetDeviceContext());
+			RenderModel<vertices::ColVertex>(m_direct3d->GetDeviceContext(), model[cModel.index]);
 			result = m_colorShader->Render(m_direct3d->GetDeviceContext(),
-				worldMatrix, viewMatrix, projectionMatrix, model[cModel.index].GetIndexCount());
+				worldMatrix, viewMatrix, projectionMatrix, model[cModel.index].indexCount);
 		});
 
 		tile.Refresh();
@@ -161,6 +162,29 @@ bool Renderer::RenderScene(Scene &scene, Camera &camera)
 
 
 	return result;
+}
+
+
+template <class T>
+void Renderer::RenderModel(ID3D11DeviceContext* device_context, vertices::Model &model)
+{
+	unsigned int stride;
+	unsigned int offset;
+
+
+	stride = sizeof(T);
+	offset = 0;
+
+	// Pass the vertex buffer to the input assembler
+	device_context->IASetVertexBuffers(0, 1, model.vertexBuffer.GetAddressOf(), &stride, &offset);
+
+	// Pass the inbdex buffer to the input assembler
+	device_context->IASetIndexBuffer(model.indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+	// Set the rendering topology (triangle list)
+	device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	return;
 }
 
 

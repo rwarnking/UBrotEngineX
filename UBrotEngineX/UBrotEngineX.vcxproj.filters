@@ -25,6 +25,12 @@
     <Filter Include="Headerdateien\ECS">
       <UniqueIdentifier>{6f395d6e-c146-4ba5-8413-f140f6b6ed32}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\IO">
+      <UniqueIdentifier>{914f608d-ebbc-4c94-a82e-4f7cfd2f26ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\IO">
+      <UniqueIdentifier>{b2eef3e3-e34b-447f-abec-c7cb050a4f26}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\application.cpp">
@@ -54,11 +60,14 @@
     <ClCompile Include="source\graphics\shaderloader.cpp">
       <Filter>Quelldateien\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="source\graphics\model.cpp">
-      <Filter>Quelldateien\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="source\tile.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="source\io\assetloader.cpp">
+      <Filter>Quelldateien\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="source\io\loader.cpp">
+      <Filter>Quelldateien\IO</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -83,9 +92,6 @@
     <ClInclude Include="header\graphics\shaderloader.h">
       <Filter>Headerdateien\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="header\graphics\model.h">
-      <Filter>Headerdateien\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="header\tile.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -97,6 +103,15 @@
     </ClInclude>
     <ClInclude Include="header\ecs\settings.h">
       <Filter>Headerdateien\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="header\graphics\vertextypes.h">
+      <Filter>Headerdateien\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="header\io\assetloader.h">
+      <Filter>Headerdateien\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="header\io\loader.h">
+      <Filter>Headerdateien\IO</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

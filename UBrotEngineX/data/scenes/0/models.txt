@@ -1,0 +1,2 @@
+sphere2.obj 0
+dragon.obj 0

@@ -82,6 +82,16 @@ private:
 	 */
 	bool RenderScene(Scene &scene, Camera &camera);
 
+	/**
+	* Activates the vertex and index buffers for the input assembler of the GPU which enables
+	* this model to be rendered by shaders. This function also sets the topology used to
+	* render the model, which is a triangle list (\c IASetPrimitiveTopology).
+	* TODO: support different rendering methods and topologies
+	* @param deviceContext
+	*/
+	template <class T>
+	void RenderModel(ID3D11DeviceContext* deviceContext, vertices::Model &model);
+
 private:
 	std::unique_ptr<Direct3D> m_direct3d;
 	std::unique_ptr<ShaderLoader> m_colorShader;

@@ -7,6 +7,7 @@
 #include <tuple>
 #include <bitset>
 #include <type_traits>
+#include <algorithm> // TODO
 
 namespace ubrot
 {
@@ -37,17 +38,31 @@ bool Scene::Initialize(ID3D11Device* device)
 		return false;
 	}
 
-	m_camera->SetPosition(0.0f, 0.0f, -10.0f);
+	m_camera->SetPosition(0.0f, 0.0f, -30.0f);
 	m_camera->RenderBaseViewMatrix();
 
 	// TODO: see if initialization should happen in a constructor
 	// TODO: reserve vector space according to number of tiles
 
+	m_meta = io::LoadSceneMeta();
+
 	// Load all currently visible tiles and all currently visible entity models of those tiles
 
 	// 36917 ms
-	m_tiles.emplace_back();
-	m_tiles.back().Initialize(device);
+	auto assetBits = io::AssetFiles(m_meta);
+
+	// Iterate over all tiles of the scene
+	for (auto i = 0; i < m_meta.tiles; i++)
+	{
+		// Check if tile is visible
+
+		// Add tile and load its asset requirements
+		m_tiles.emplace_back();
+		if (!m_tiles.back().Initialize(device, assetBits))
+			return false;
+	}
+	// Lade essests TODO
+	m_models = io::LoadModels(assetBits.modelFiles, device);
 
 	return true;
 }
@@ -62,6 +77,12 @@ graphics::Camera& Scene::GetCamera()
 std::vector<Tile>& Scene::GetTiles()
 {
 	return m_tiles;
+}
+
+
+std::vector<graphics::vertices::Model>& Scene::GetModels()
+{
+	return m_models;
 }
 
 }

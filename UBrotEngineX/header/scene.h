@@ -31,6 +31,7 @@ namespace ubrot
 class Scene
 {
 public:
+
 	/**
 	 * A constructor where all the member pointers are initialised to null.
 	 */
@@ -61,9 +62,21 @@ public:
 	 */
 	std::vector<Tile>& GetTiles();
 
+	/**
+	* TODO: remove this in the future/adjust for tiles etc.
+	* @return reference to m_model
+	*/
+	std::vector<graphics::vertices::Model>& GetModels();
+
 private:
 	std::unique_ptr<graphics::Camera> m_camera;
+	// Holds meta information (counts) TODO: unique ptr
+	io::SceneMeta m_meta;
+	// Holds all tiles of the scene
 	std::vector<Tile> m_tiles;
+	// Holds all models needed to render the scene
+	std::vector<graphics::vertices::Model> m_models;
+
 };
 };
 
