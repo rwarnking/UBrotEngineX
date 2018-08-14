@@ -60,6 +60,16 @@ bool Renderer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	m_colorShader->InitializeShader(m_direct3d->GetDevice(), hwnd);
 
+
+	// TODO array das dynamisch nach bedarf geladen wird
+	m_oneColorShader = std::make_unique<ColorShader>();
+	if (!m_oneColorShader)
+	{
+		return false;
+	}
+
+	m_oneColorShader->InitializeShader(m_direct3d->GetDevice(), hwnd);
+
 	return true;
 }
 
@@ -138,6 +148,28 @@ bool Renderer::RenderScene(Scene &scene, Camera &camera)
 				XMMatrixTranslation(cTransform.position.x, cTransform.position.y, cTransform.position.z)
 			);
 		});*/
+		static float rot = 0.0f; // TODO rausnehmen
+		//rot += 0.0001f;
+
+		mgr.forEntitiesMatching<ecs::SRender>(
+			[&](auto index, auto& cModel, auto& cTransform, auto& cColor)
+		{
+			// Transform the Object.
+			worldMatrix = XMMatrixMultiply(
+				XMMatrixMultiply(
+					XMMatrixScaling(cTransform.scale.x, cTransform.scale.y, cTransform.scale.z),
+					XMMatrixRotationRollPitchYaw(cTransform.rotation.x, cTransform.rotation.y + rot, cTransform.rotation.z)),
+				XMMatrixTranslation(cTransform.position.x, cTransform.position.y, cTransform.position.z)
+			);
+
+			RenderModel<vertices::SimVertex>(m_direct3d->GetDeviceContext(), model[cModel.index]);
+			result = m_oneColorShader->Render(
+				m_direct3d->GetDeviceContext(),
+				worldMatrix, viewMatrix, projectionMatrix,
+				cColor.color,
+				model[cModel.index].indexCount
+			);
+		});
 
 		// First parameter is the entity index
 		mgr.forEntitiesMatching<ecs::SRenderColor>(
@@ -147,13 +179,16 @@ bool Renderer::RenderScene(Scene &scene, Camera &camera)
 			worldMatrix = XMMatrixMultiply(
 				XMMatrixMultiply(
 					XMMatrixScaling(cTransform.scale.x, cTransform.scale.y, cTransform.scale.z),
-					XMMatrixRotationRollPitchYaw(cTransform.rotation.x, cTransform.rotation.y, cTransform.rotation.z)),
+					XMMatrixRotationRollPitchYaw(cTransform.rotation.x, cTransform.rotation.y + rot, cTransform.rotation.z)),
 				XMMatrixTranslation(cTransform.position.x, cTransform.position.y, cTransform.position.z)
 			);
 
 			RenderModel<vertices::ColVertex>(m_direct3d->GetDeviceContext(), model[cModel.index]);
-			result = m_colorShader->Render(m_direct3d->GetDeviceContext(),
-				worldMatrix, viewMatrix, projectionMatrix, model[cModel.index].indexCount);
+			result = m_colorShader->Render(
+				m_direct3d->GetDeviceContext(),
+				worldMatrix, viewMatrix, projectionMatrix,
+				model[cModel.index].indexCount
+			);
 		});
 
 		tile.Refresh();

@@ -23,6 +23,7 @@
 // MY CLASS INCLUDES //
 ///////////////////////
 #include "graphics/renderer.h"
+#include "logic/gamelogic.h"
 #include "timer.h"
 
 namespace ubrot
@@ -46,12 +47,6 @@ public:
 	* A constructor where all the member pointers are initialised to null.
 	*/
 	Game();
-	/**
-	* Empty copy contructor
-	* @param other to copy
-	*/
-	Game(const Game& other);
-	~Game();
 
 	/**
 	 * Calls \c InitializeWindows and initialized all important objects (e.g. renderer, scenes)
@@ -94,6 +89,7 @@ private:
 
 	std::unique_ptr<graphics::Renderer> m_renderer;
 	std::unique_ptr<Scene> m_scene;
+	logic::GameLogic *m_logic;
 	std::unique_ptr<Timer> m_timer;
 };
 

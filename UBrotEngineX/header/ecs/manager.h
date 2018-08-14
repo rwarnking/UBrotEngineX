@@ -14,7 +14,7 @@
 ///////////////////////
 // MY CLASS INCLUDES //
 ///////////////////////
-#include "defs.h"
+#include "settings.h"
 
 
 //namespace ubrot

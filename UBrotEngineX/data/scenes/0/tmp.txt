@@ -4,4 +4,4 @@ Queen.obj 0
 Knight.obj 0
 Pawn.obj 0
 Rook.obj 0
-sphere2.obj 1
+sphere2.obj 0

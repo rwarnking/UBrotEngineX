@@ -1,6 +1,8 @@
 #include "../../header/io/loader.h"
 #include "../../header/io/assetloader.h"
 
+#include "../../header/logic/gameobjects.h"
+
 #include <algorithm>
 #include <fstream>
 #include <limits>
@@ -67,8 +69,9 @@ inline std::string GetFileAssets(const char* dir, const char* file)
 
 template <class T>
 void ParseComponents(
-	ecs::Manager<ecs::MySettings> &mgr,
-	ecs::Impl::Handle &entity,
+	logic::GameLogic *logic,
+	ecs::Manager<AllSettings> &mgr,
+	ecs::EntityIndex &entity,
 	const rj::GenericObject<false, T> &comps,
 	AssetFiles &bits
 )
@@ -77,11 +80,26 @@ void ParseComponents(
 	{
 		if (c.name == "transform")
 		{
-			auto& pos(mgr.addComponent<ecs::CTransform>(entity, ecs::CTransform()).position);
+			auto& trans(mgr.addComponent<ecs::CTransform>(entity, ecs::CTransform()));
 			auto tmp = c.value["pos"].GetArray();
-			pos = DirectX::XMFLOAT3(tmp[0].GetFloat(), tmp[1].GetFloat(), tmp[2].GetFloat());
+			trans.position = DirectX::XMFLOAT3(
+				tmp[0].GetFloat(),
+				tmp[1].GetFloat(),
+				tmp[2].GetFloat()
+			);
+			tmp = c.value["rot"].GetArray();
+			trans.rotation = DirectX::XMFLOAT3(
+				tmp[0].GetFloat(),
+				tmp[1].GetFloat(),
+				tmp[2].GetFloat()
+			);
+			tmp = c.value["scale"].GetArray();
+			trans.scale = DirectX::XMFLOAT3(
+				tmp[0].GetFloat(),
+				tmp[1].GetFloat(),
+				tmp[2].GetFloat()
+			);
 		}
-
 		if (c.name == "model")
 		{
 			auto& model(mgr.addComponent<ecs::CModel>(entity).index);
@@ -94,13 +112,19 @@ void ParseComponents(
 
 			bits.modelFiles[model] = true;
 		}
+		else
+		{
+			// TODO: let game logic handle other components
+			logic->HandleComponent(mgr, entity, c.name.GetString(), c.value);
+		}
 	}
 }
 
 template <class T>
 void ParseTags(
-	ecs::Manager<ecs::MySettings> &mgr,
-	ecs::Impl::Handle &entity,
+	logic::GameLogic *logic,
+	ecs::Manager<AllSettings> &mgr,
+	ecs::EntityIndex &entity,
 	const rj::GenericArray<false, T> &tags
 )
 {
@@ -109,6 +133,11 @@ void ParseTags(
 		if (t == "color")
 		{
 			mgr.addTag<ecs::TColor>(entity);
+		}
+		else
+		{
+			// TODO: let game logic handle other components
+			logic->HandleTag(mgr, entity, t.GetString());
 		}
 	}
 }
@@ -126,7 +155,7 @@ SceneMeta LoadSceneMeta(int sceneID)
 	return meta;
 }
 
-bool LoadEntities(ecs::Manager<ecs::MySettings> &mgr, AssetFiles &bits)
+bool LoadEntities(logic::GameLogic *logic, ecs::Manager<AllSettings> &mgr, AssetFiles &bits)
 {
 	FILE *fp;
 	fopen_s(&fp, GetFileTile(0, 0).c_str(), "rb");
@@ -139,11 +168,11 @@ bool LoadEntities(ecs::Manager<ecs::MySettings> &mgr, AssetFiles &bits)
 	const auto entities = d["entities"].GetArray();
 	for (auto i(0u); i < entities.Size(); ++i)
 	{
-		auto e(mgr.createHandle());
+		auto e(mgr.createIndex());
 		const auto comps = entities[i]["components"].GetObjectW();
-		ParseComponents(mgr, e, comps, bits);
+		ParseComponents(logic, mgr, e, comps, bits);
 		const auto tags = entities[i]["tags"].GetArray();
-		ParseTags(mgr, e, tags);
+		ParseTags(logic, mgr, e, tags);
 	}
 
 	return true;
@@ -152,7 +181,8 @@ bool LoadEntities(ecs::Manager<ecs::MySettings> &mgr, AssetFiles &bits)
 
 std::vector<gv::Model> LoadModels(BitVec &modelBits, ID3D11Device *device, int sceneID)
 {
-	auto models = std::vector<gv::Model>();
+	auto models = std::vector<gv::Model>(modelBits.size());
+	auto tmp = std::vector<gv::Model>();
 
 	auto tuple = ecs::MPL::Impl::TypeTuple<gv::VertexList>();
 
@@ -164,9 +194,6 @@ std::vector<gv::Model> LoadModels(BitVec &modelBits, ID3D11Device *device, int s
 	}
 	for (auto i(0u); i < modelBits.size(); i++)
 	{
-		if (!modelBits[i])
-			continue;
-
 		char name[256];
 		std::size_t vertexIndex;
 		if (!(fin >> name >> vertexIndex))
@@ -174,9 +201,13 @@ std::vector<gv::Model> LoadModels(BitVec &modelBits, ID3D11Device *device, int s
 			// TODO: handle reading error
 		}
 
-		models.emplace_back();
+		if (!modelBits[i])
+		{
+			continue;
+		}
+
 		auto load = [&](auto t) {
-			ubrot::io::LoadModel<ECS_TYPE(t)>(device, GetFileAssets(DIR_MODELS, name), models.back());
+			ubrot::io::LoadModel<ECS_TYPE(t)>(device, GetFileAssets(DIR_MODELS, name), models[i]);
 		};
 		ecs::MPL::VisitAt(tuple, vertexIndex, load);
 

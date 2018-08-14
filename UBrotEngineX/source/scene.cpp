@@ -29,7 +29,7 @@ Scene::~Scene()
 }
 
 
-bool Scene::Initialize(ID3D11Device* device)
+bool Scene::Initialize(ID3D11Device* device, logic::GameLogic *logic)
 {
 	// Create a camera and place it at the origin.
 	m_camera = std::make_unique<graphics::Camera>();
@@ -38,7 +38,8 @@ bool Scene::Initialize(ID3D11Device* device)
 		return false;
 	}
 
-	m_camera->SetPosition(0.0f, 0.0f, -30.0f);
+	m_camera->SetPosition(0.0f, 10.0f, 0.0f);
+	m_camera->SetRotation(90.0f, 0.0f, 0.0f);
 	m_camera->RenderBaseViewMatrix();
 
 	// TODO: see if initialization should happen in a constructor
@@ -58,11 +59,14 @@ bool Scene::Initialize(ID3D11Device* device)
 
 		// Add tile and load its asset requirements
 		m_tiles.emplace_back();
-		if (!m_tiles.back().Initialize(device, assetBits))
+		if (!m_tiles.back().Initialize(device, assetBits, logic))
 			return false;
 	}
-	// Lade essests TODO
+	// Lade assets TODO
+	logic->RegisterEntities(m_tiles[0], assetBits);
+
 	m_models = io::LoadModels(assetBits.modelFiles, device);
+
 
 	return true;
 }

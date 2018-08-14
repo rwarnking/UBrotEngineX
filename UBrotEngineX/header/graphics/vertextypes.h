@@ -5,8 +5,6 @@
 #include <wrl/client.h>
 #include <type_traits>
 
-#include <stdarg.h>
-
 #include "../../../mpl/Utils.hpp"
 
 namespace ubrot
@@ -37,6 +35,17 @@ struct Face
 	int nIndex1, nIndex2, nIndex3;
 };
 
+/*
+struct SilVertex
+{
+	dx::XMFLOAT3 position;
+	dx::XMFLOAT3 normal;
+};*/
+
+struct SimVertex
+{
+	dx::XMFLOAT3 position;
+};
 /**
 * Container for colored vertices with a 3D position an a RGBA-color component
 */
@@ -81,12 +90,12 @@ struct TesVertex
 template <typename... Ts>
 using VertexTypes = ecs::MPL::TypeList<Ts...>;
 
-using VertexList = VertexTypes<ColVertex, TexVertex, LigVertex, NomVertex, TesVertex>;
+using VertexList = VertexTypes<SimVertex, ColVertex, TexVertex, LigVertex, NomVertex, TesVertex>;
 
 // Get index of type
-static_assert(ecs::MPL::IndexOf<ColVertex, VertexList>() == 0, "");
+static_assert(ecs::MPL::IndexOf<ColVertex, VertexList>() == 1, "");
 // Get type at index
-static_assert(std::is_same<ecs::MPL::Nth<1, VertexList>, TexVertex>{}, "");
+static_assert(std::is_same<ecs::MPL::Nth<2, VertexList>, TexVertex>{}, "");
 
 // Concat type lists
 //using v1 = VertexTypes<ColVertex>;
@@ -98,6 +107,21 @@ static_assert(std::is_same<ecs::MPL::Nth<1, VertexList>, TexVertex>{}, "");
 // TODO: improve
 //		 - variable argument list results in internal compiler error on x64 in release mode
 //			+ template usage (SFINAE, enable_if)
+
+static void Create(
+	SimVertex &vert,
+	dx::XMFLOAT3 pos,
+	dx::XMFLOAT4 color,
+	dx::XMFLOAT2 uv,
+	dx::XMFLOAT3 normal,
+	dx::XMFLOAT3 tangent,
+	dx::XMFLOAT3 binormal
+)
+{
+	// TODO nochmal drueber nachdenken ob man das will
+	vert.position = pos;
+}
+
 static void Create(
 	ColVertex &vert,
 	dx::XMFLOAT3 pos,
@@ -126,6 +150,7 @@ static void Create(
 	vert.position = pos;
 	vert.uv = uv;
 }
+
 
 static void Create(
 	LigVertex &vert,

@@ -15,10 +15,18 @@
 // MY CLASS INCLUDES //
 ///////////////////////
 #include "../ecs/manager.h"
+#include "../../header/logic/gamelogic.h"
 #include "../graphics/vertextypes.h"
+
 
 namespace ubrot
 {
+
+// Forward declarations
+namespace logic
+{
+class GameLogic;
+};
 namespace io
 {
 
@@ -71,10 +79,11 @@ struct AssetFiles
 SceneMeta LoadSceneMeta(int sceneID=0);
 
 // läd entitys eines tiles aus File
-bool LoadEntities(ecs::Manager<ecs::MySettings> &mgr, AssetFiles &bits);
+bool LoadEntities(logic::GameLogic *logic, ecs::Manager<AllSettings> &mgr, AssetFiles &bits);
 
 // TODO sceneID
-std::vector<graphics::vertices::Model> LoadModels(BitVec &modelBits, ID3D11Device *device, int sceneID = 0);
+std::vector<graphics::vertices::Model>
+	LoadModels(BitVec &modelBits, ID3D11Device *device, int sceneID = 0);
 
 };
 };

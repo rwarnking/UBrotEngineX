@@ -12,7 +12,7 @@ Tile::Tile()
 }
 
 
-bool Tile::Initialize(ID3D11Device* device, io::AssetFiles &bits)
+bool Tile::Initialize(ID3D11Device* device, io::AssetFiles &bits, logic::GameLogic *logic)
 {
 	// Load all currently visible tiles and all currently visible entity models of those tiles
 	/*const auto size = 40;
@@ -42,7 +42,7 @@ bool Tile::Initialize(ID3D11Device* device, io::AssetFiles &bits)
 		tmp2.push_back(2);
 	}*/
 
-	return io::LoadEntities(m_mgr, bits);
+	return io::LoadEntities(logic, m_mgr, bits);
 }
 
 
@@ -52,7 +52,7 @@ void Tile::Refresh()
 }
 
 
-ecs::Manager<ecs::MySettings>& Tile::GetManager()
+ecs::Manager<AllSettings>& Tile::GetManager()
 {
 	return m_mgr;
 }

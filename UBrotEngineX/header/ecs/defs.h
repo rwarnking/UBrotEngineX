@@ -37,16 +37,20 @@ struct CTexture
 {
 	std::size_t index;
 };
+struct CColor
+{
+	DirectX::XMFLOAT4 color;
+};
 
-using MyComponents = ComponentList<CTransform, CModel, CTexture>;
+using MyComponents = ComponentList<CTransform, CModel, CTexture, CColor>;
 
 // Tags
 struct TColor {};
 
 using MyTags = TagList<TColor>;
 
-using STransform = Signature<CTransform>;
-using SRender = Signature<CModel, CTransform>;
+using STransform = Signature<CTransform>; // TODO: weg?
+using SRender = Signature<CModel, CTransform, CColor>;
 using SRenderColor = Signature<CModel, CTransform, TColor>;
 using SRenderTex = Signature<CModel, CTransform, CTexture>;
 

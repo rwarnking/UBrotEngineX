@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Filename: color.vs
+// Filename: onecolor.vs
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -14,13 +14,18 @@ cbuffer MatrixBuffer : register(b0)
 };
 
 
+cbuffer ColorBuffer : register(b1)
+{
+    float4 color;
+};
+
+
 //////////////
 // TYPEDEFS //
 //////////////
 struct VertexInputType
 {
     float4 position : POSITION;
-    float4 color : COLOR;
 };
 
 
@@ -34,7 +39,7 @@ struct PixelInputType
 ////////////////////////////////////////////////////////////////////////////////
 // Vertex Shader
 ////////////////////////////////////////////////////////////////////////////////
-PixelInputType ColorVertexShader(VertexInputType input)
+PixelInputType OneColorVertexShader(VertexInputType input)
 {
     PixelInputType output;
 
@@ -48,7 +53,7 @@ PixelInputType ColorVertexShader(VertexInputType input)
     output.position = mul(output.position, projectionMatrix);
 
     // Store the input color for the pixel shader to use.
-	output.color = input.color;
+	output.color = color;
 
 
     return output;

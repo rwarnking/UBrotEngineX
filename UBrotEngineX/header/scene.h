@@ -15,6 +15,7 @@
 // MY CLASS INCLUDES //
 ///////////////////////
 #include "graphics/camera.h"
+#include "logic/gamelogic.h"
 //#include "graphics/model.h"
 #include "tile.h"
 //#include "entityloader.h"
@@ -49,7 +50,7 @@ public:
 	* @param device
 	* @return result \c true if successfull
 	*/
-	bool Initialize(ID3D11Device* device);
+	bool Initialize(ID3D11Device* device, logic::GameLogic *logic);
 
 	/**
 	 * Returns this scene's main camera.

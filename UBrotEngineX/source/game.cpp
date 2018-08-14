@@ -2,6 +2,8 @@
 // Filename: game.cpp
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #include "../header/game.h"
+#include "../header/logic/chess.h"
+
 #include <chrono> // TODO delete
 #include <array> // TODO delete
 #include <string> // TODO delete
@@ -15,17 +17,8 @@ Game::Game()
 {
 	m_renderer = nullptr;
 	m_scene = nullptr;
+	m_logic = nullptr;
 	m_timer = nullptr;
-}
-
-
-Game::Game(const Game& other)
-{
-}
-
-
-Game::~Game()
-{
 }
 
 
@@ -58,6 +51,12 @@ bool Game::Initialize()
 		return false;
 	}
 
+	m_logic = new Chess(); // TODO: !
+	if (!m_logic)
+	{
+		return false;
+	}
+
 	// Create and initialize a scence object that represents one scene (models, lights, etc.)
 	m_scene = std::make_unique<Scene>();//new Scene();
 	if (!m_scene)
@@ -65,7 +64,7 @@ bool Game::Initialize()
 		return false;
 	}
 
-	result = m_scene->Initialize(m_renderer->GetD3D().GetDevice());
+	result = m_scene->Initialize(m_renderer->GetD3D().GetDevice(), m_logic);
 	if (!result)
 	{
 		MessageBox(m_hwnd, L"Could not initialize the Scene object.", L"Error", MB_OK);
@@ -100,6 +99,12 @@ void Game::Shutdown()
 	if (m_renderer)
 	{
 		m_renderer->Shutdown();
+	}
+
+	// TODO:
+	if (m_logic)
+	{
+		delete m_logic;
 	}
 
 	ShutdownWindows();
@@ -176,6 +181,7 @@ bool Game::Frame()
 
 	// Render the scene
 	m_renderer->Process(*m_scene);
+	m_logic->Process(*m_scene);
 
 	// Execute the game logic
 

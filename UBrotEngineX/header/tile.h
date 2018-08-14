@@ -16,6 +16,7 @@
 ///////////////////////
 #include "graphics/model.h"
 #include "ecs/manager.h"
+#include "logic/gameobjects.h"
 #include "io/loader.h"
 
 
@@ -36,14 +37,14 @@ public:
 	* @param device
 	* @return TODO
 	*/
-	bool Initialize(ID3D11Device* device, io::AssetFiles &bits);
+	bool Initialize(ID3D11Device* device, io::AssetFiles &bits, logic::GameLogic *logic);
 
 	void Refresh();
 
-	ecs::Manager<ecs::MySettings>& GetManager();
+	ecs::Manager<AllSettings>& GetManager();
 
 private:
-	ecs::Manager<ecs::MySettings> m_mgr; // TODO unique pointer
+	ecs::Manager<AllSettings> m_mgr; // TODO unique pointer
 
 	// component vectors
 };

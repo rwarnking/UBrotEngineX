@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Filename: shaderloader.cpp
+// Filename: colorshader.cpp
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-#include "../../header/graphics/shaderloader.h"
+#include "../../header/graphics/colorshader.h"
 
 using namespace DirectX;
 
@@ -10,32 +10,33 @@ namespace ubrot
 namespace graphics
 {
 
-ShaderLoader::ShaderLoader()
+ColorShader::ColorShader()
 {
 	m_vertexShader = nullptr;
 	m_pixelShader = nullptr;
 	m_layout = nullptr;
 	m_matrixBuffer = nullptr;
+	m_colorBuffer = nullptr;
 }
 
 
-ShaderLoader::ShaderLoader(const ShaderLoader& other)
+ColorShader::ColorShader(const ColorShader& other)
 {
 }
 
 
-ShaderLoader::~ShaderLoader()
+ColorShader::~ColorShader()
 {
 }
 
 
-bool ShaderLoader::InitializeShader(ID3D11Device *device, HWND hwnd)
+bool ColorShader::InitializeShader(ID3D11Device *device, HWND hwnd)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
 	ID3D10Blob* vertexShaderBuffer;
 	ID3D10Blob* pixelShaderBuffer;
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[1];
 	unsigned int numElements;
 	//D3D11_SAMPLER_DESC samplerDesc; // TODO: not needed for colored
 
@@ -46,17 +47,17 @@ bool ShaderLoader::InitializeShader(ID3D11Device *device, HWND hwnd)
 
 	// Try to compile the vertex shader code given by the file and print an error if it fails
 	result = D3DCompileFromFile(
-		L"../UBrotEngineX/shader/color.vs", NULL, NULL, "ColorVertexShader", "vs_5_0",
+		L"../UBrotEngineX/shader/onecolor.vs", NULL, NULL, "OneColorVertexShader", "vs_5_0",
 		D3D10_SHADER_ENABLE_STRICTNESS, 0, &vertexShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{
 		if (errorMessage)
 		{
-			OutputShaderErrorMessage(errorMessage, hwnd, L"../UBrotEngineX/shader/color.vs");
+			OutputShaderErrorMessage(errorMessage, hwnd, L"../UBrotEngineX/shader/onecolor.vs");
 		}
 		else
 		{
-			MessageBox(hwnd, L"../UBrotEngineX/shader/color.vs", L"Missing Shader File", MB_OK);
+			MessageBox(hwnd, L"../UBrotEngineX/shader/onecolor.vs", L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -65,17 +66,17 @@ bool ShaderLoader::InitializeShader(ID3D11Device *device, HWND hwnd)
 
 	// Try to compile the fragment shader code given by the dile and print an error if it fails
 	result = D3DCompileFromFile(
-		L"../UBrotEngineX/shader/color.fs", NULL, NULL, "ColorFragmentShader", "ps_5_0",
+		L"../UBrotEngineX/shader/onecolor.fs", NULL, NULL, "OneColorFragmentShader", "ps_5_0",
 		D3D10_SHADER_ENABLE_STRICTNESS, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{
 		if (errorMessage)
 		{
-			OutputShaderErrorMessage(errorMessage, hwnd, L"../UBrotEngineX/shader/color.fs");
+			OutputShaderErrorMessage(errorMessage, hwnd, L"../UBrotEngineX/shader/onecolor.fs");
 		}
 		else
 		{
-			MessageBox(hwnd, L"../UBrotEngineX/shader/color.fs", L"Missing Shader File", MB_OK);
+			MessageBox(hwnd, L"../UBrotEngineX/shader/onecolor.fs", L"Missing Shader File", MB_OK);
 		}
 
 		return false;
@@ -110,19 +111,11 @@ bool ShaderLoader::InitializeShader(ID3D11Device *device, HWND hwnd)
 	// The structure here must conform to that in the shader file and the vertex struct.
 	polygonLayout[0].SemanticName = "POSITION";
 	polygonLayout[0].SemanticIndex = 0;
-	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	polygonLayout[0].InputSlot = 0;
 	polygonLayout[0].AlignedByteOffset = 0;
 	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[0].InstanceDataStepRate = 0;
-
-	polygonLayout[1].SemanticName = "COLOR";
-	polygonLayout[1].SemanticIndex = 0;
-	polygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	polygonLayout[1].InputSlot = 0;
-	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[1].InstanceDataStepRate = 0;
 
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
@@ -163,13 +156,31 @@ bool ShaderLoader::InitializeShader(ID3D11Device *device, HWND hwnd)
 		return false;
 	}
 
+
+	D3D11_BUFFER_DESC colorBufferDesc;
+
+	colorBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	colorBufferDesc.ByteWidth = sizeof(ColorBufferType);
+	colorBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	colorBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	colorBufferDesc.MiscFlags = 0;
+	colorBufferDesc.StructureByteStride = 0;
+
+	result = device->CreateBuffer(&colorBufferDesc, NULL, m_colorBuffer.GetAddressOf());
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+
 	return true;
 }
 
 
-bool XM_CALLCONV ShaderLoader::Render(
+bool XM_CALLCONV ColorShader::Render(
 	ID3D11DeviceContext* deviceContext,
 	FXMMATRIX worldMatrix, CXMMATRIX viewMatrix, CXMMATRIX projectionMatrix,
+	XMFLOAT4 color,
 	int indexCount
 )
 {
@@ -210,6 +221,29 @@ bool XM_CALLCONV ShaderLoader::Render(
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, m_matrixBuffer.GetAddressOf());
 
 
+	ColorBufferType* data_ptr2;
+
+	// Lock the constant buffer so it can be written to.
+	result = deviceContext->Map(
+		m_colorBuffer.Get(),
+		0, D3D11_MAP_WRITE_DISCARD,
+		0, &mappedResource
+	);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	data_ptr2 = (ColorBufferType*)mappedResource.pData;
+	data_ptr2->color = color;
+
+	deviceContext->Unmap(m_colorBuffer.Get(), 0);
+
+	// Choose the buffer number to be used in the shader and set the buffer
+	bufferNumber = 1;
+	deviceContext->VSSetConstantBuffers(bufferNumber, 1, m_colorBuffer.GetAddressOf());
+
+
 	// Call render to draw
 	RenderShader(deviceContext, indexCount);
 
@@ -217,7 +251,7 @@ bool XM_CALLCONV ShaderLoader::Render(
 }
 
 
-void ShaderLoader::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
+void ColorShader::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
 {
 	deviceContext->IASetInputLayout(m_layout.Get());
 
@@ -230,7 +264,7 @@ void ShaderLoader::RenderShader(ID3D11DeviceContext* deviceContext, int indexCou
 }
 
 
-void ShaderLoader::OutputShaderErrorMessage(
+void ColorShader::OutputShaderErrorMessage(
 	ID3D10Blob* errorMessage,
 	HWND hwnd,
 	const WCHAR* shaderFilename

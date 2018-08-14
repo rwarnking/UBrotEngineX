@@ -23,11 +23,13 @@
     <ClCompile Include="source\game.cpp" />
     <ClCompile Include="source\globals.cpp" />
     <ClCompile Include="source\graphics\camera.cpp" />
+    <ClCompile Include="source\graphics\colorshader.cpp" />
     <ClCompile Include="source\graphics\direct3d.cpp" />
     <ClCompile Include="source\graphics\renderer.cpp" />
     <ClCompile Include="source\graphics\shaderloader.cpp" />
     <ClCompile Include="source\io\assetloader.cpp" />
     <ClCompile Include="source\io\loader.cpp" />
+    <ClCompile Include="source\logic\chess.cpp" />
     <ClCompile Include="source\scene.cpp" />
     <ClCompile Include="source\tile.cpp" />
     <ClCompile Include="source\timer.cpp" />
@@ -38,12 +40,16 @@
     <ClInclude Include="header\ecs\settings.h" />
     <ClInclude Include="header\game.h" />
     <ClInclude Include="header\graphics\camera.h" />
+    <ClInclude Include="header\graphics\colorshader.h" />
     <ClInclude Include="header\graphics\direct3d.h" />
     <ClInclude Include="header\graphics\renderer.h" />
     <ClInclude Include="header\graphics\shaderloader.h" />
     <ClInclude Include="header\graphics\vertextypes.h" />
     <ClInclude Include="header\io\assetloader.h" />
     <ClInclude Include="header\io\loader.h" />
+    <ClInclude Include="header\logic\chess.h" />
+    <ClInclude Include="header\logic\gamelogic.h" />
+    <ClInclude Include="header\logic\gameobjects.h" />
     <ClInclude Include="header\scene.h" />
     <ClInclude Include="header\tile.h" />
     <ClInclude Include="header\timer.h" />
@@ -51,6 +57,8 @@
   <ItemGroup>
     <None Include="shader\color.fs" />
     <None Include="shader\color.vs" />
+    <None Include="shader\onecolor.fs" />
+    <None Include="shader\onecolor.vs" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

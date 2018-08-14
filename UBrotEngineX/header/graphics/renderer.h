@@ -20,6 +20,7 @@
 #include "camera.h" // TODO: refactor
 #include "../scene.h"
 #include "shaderloader.h"
+#include "colorshader.h"
 
 
 namespace ubrot
@@ -95,6 +96,7 @@ private:
 private:
 	std::unique_ptr<Direct3D> m_direct3d;
 	std::unique_ptr<ShaderLoader> m_colorShader;
+	std::unique_ptr<ColorShader> m_oneColorShader;
 };
 };
 };

@@ -25,7 +25,7 @@ int WINAPI WinMain(
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	// NuR ZUM TESTEN an der entsprechenden Speicherlocation
-	//_CrtSetBreakAlloc(1282);
+	//_CrtSetBreakAlloc(167);
 
 	auto game = std::make_unique<ubrot::Game>();
 	bool result;
@@ -34,7 +34,7 @@ int WINAPI WinMain(
 	//game = new Game;
 	if (!game)
 	{
-		return 0;
+		return 1;
 	}
 
 	// Starte den game-loop

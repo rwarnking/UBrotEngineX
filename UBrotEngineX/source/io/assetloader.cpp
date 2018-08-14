@@ -336,12 +336,11 @@ bool LoadData(
 
 		gv::Create(vertices2[j],
 			dx::XMFLOAT3(vertices[vIndex].x, vertices[vIndex].y, vertices[vIndex].z),
-			dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f),
+			dx::XMFLOAT4(0.f, 0.f, (float)i / faceIndex, 1.f),
 			dx::XMFLOAT2(texcoords[tIndex].x, texcoords[tIndex].y),
 			dx::XMFLOAT3(normals[nIndex].x, normals[nIndex].y, normals[nIndex].z),
 			dx::XMFLOAT3(),
 			dx::XMFLOAT3()
-			//tex_num
 		);
 
 		vIndex = faces[i].vIndex2 - 1;
@@ -350,12 +349,11 @@ bool LoadData(
 
 		gv::Create(vertices2[j + 1],
 			dx::XMFLOAT3(vertices[vIndex].x, vertices[vIndex].y, vertices[vIndex].z),
-			dx::XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f),
+			dx::XMFLOAT4(0.f, 0.f, (float)i / faceIndex, 1.f),
 			dx::XMFLOAT2(texcoords[tIndex].x, texcoords[tIndex].y),
 			dx::XMFLOAT3(normals[nIndex].x, normals[nIndex].y, normals[nIndex].z),
 			dx::XMFLOAT3(),
 			dx::XMFLOAT3()
-			//tex_num
 		);
 
 		vIndex = faces[i].vIndex3 - 1;
@@ -364,12 +362,11 @@ bool LoadData(
 
 		gv::Create(vertices2[j + 2],
 			dx::XMFLOAT3(vertices[vIndex].x, vertices[vIndex].y, vertices[vIndex].z),
-			dx::XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f),
+			dx::XMFLOAT4(0.f, 0.f, (float)i / faceIndex, 1.f),
 			dx::XMFLOAT2(texcoords[tIndex].x, texcoords[tIndex].y),
 			dx::XMFLOAT3(normals[nIndex].x, normals[nIndex].y, normals[nIndex].z),
 			dx::XMFLOAT3(),
 			dx::XMFLOAT3()
-			//tex_num
 		);
 
 		indices[j] = j;
@@ -485,6 +482,7 @@ bool InitializeBuffers(
 	return true;
 }
 
+template bool LoadModel<gv::SimVertex>(ID3D11Device* device, std::string fn, gv::Model &model);
 template bool LoadModel<gv::ColVertex>(ID3D11Device* device, std::string fn, gv::Model &model);
 template bool LoadModel<gv::TexVertex>(ID3D11Device* device, std::string fn, gv::Model &model);
 template bool LoadModel<gv::LigVertex>(ID3D11Device* device, std::string fn, gv::Model &model);
