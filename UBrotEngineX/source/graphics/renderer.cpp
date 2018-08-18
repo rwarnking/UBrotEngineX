@@ -2,6 +2,7 @@
 // Filename: renderer.cpp
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #include "../../header/graphics/renderer.h"
+#include "../../header/io/modelmanager.h"
 
 using namespace DirectX;
 
@@ -115,7 +116,7 @@ bool Renderer::RenderScene(Scene &scene, Camera &camera)
 	auto worldMatrix = m_direct3d->GetWorldMatrix();
 	auto projectionMatrix = m_direct3d->GetProjectionMatrix();
 
-	auto& model = scene.GetModels();
+	//auto& model = scene.GetModels();
 
 	// Render all entities in the scene
 	for (auto& tile : scene.GetTiles())
@@ -162,12 +163,13 @@ bool Renderer::RenderScene(Scene &scene, Camera &camera)
 				XMMatrixTranslation(cTransform.position.x, cTransform.position.y, cTransform.position.z)
 			);
 
-			RenderModel<vertices::SimVertex>(m_direct3d->GetDeviceContext(), model[cModel.index]);
+			auto& model = models::GetModel(cModel.index, mgr.hasTag<ecs::TProcedural>(index));
+			RenderModel<vertices::SimVertex>(m_direct3d->GetDeviceContext(), model);
 			result = m_oneColorShader->Render(
 				m_direct3d->GetDeviceContext(),
 				worldMatrix, viewMatrix, projectionMatrix,
 				cColor.color,
-				model[cModel.index].indexCount
+				model.indexCount
 			);
 		});
 
@@ -183,11 +185,12 @@ bool Renderer::RenderScene(Scene &scene, Camera &camera)
 				XMMatrixTranslation(cTransform.position.x, cTransform.position.y, cTransform.position.z)
 			);
 
-			RenderModel<vertices::ColVertex>(m_direct3d->GetDeviceContext(), model[cModel.index]);
+			auto& model = models::GetModel(cModel.index, mgr.hasTag<ecs::TProcedural>(index));
+			RenderModel<vertices::ColVertex>(m_direct3d->GetDeviceContext(), model);
 			result = m_colorShader->Render(
 				m_direct3d->GetDeviceContext(),
 				worldMatrix, viewMatrix, projectionMatrix,
-				model[cModel.index].indexCount
+				model.indexCount
 			);
 		});
 

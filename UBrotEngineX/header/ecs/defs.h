@@ -46,8 +46,10 @@ using MyComponents = ComponentList<CTransform, CModel, CTexture, CColor>;
 
 // Tags
 struct TColor {};
+struct TProcedural {};
 
-using MyTags = TagList<TColor>;
+
+using MyTags = TagList<TColor, TProcedural>;
 
 using STransform = Signature<CTransform>; // TODO: weg?
 using SRender = Signature<CModel, CTransform, CColor>;

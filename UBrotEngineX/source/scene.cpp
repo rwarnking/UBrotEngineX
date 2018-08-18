@@ -38,8 +38,9 @@ bool Scene::Initialize(ID3D11Device* device, logic::GameLogic *logic)
 		return false;
 	}
 
-	m_camera->SetPosition(0.0f, 10.0f, 0.0f);
-	m_camera->SetRotation(90.0f, 0.0f, 0.0f);
+	m_camera->SetPosition(0.0f, 0.0f, -10.0f);
+	m_camera->SetRotation(0.0f, 0.0f, 0.0f);
+	m_camera->SetFrameTime(0.2f); // TODO
 	m_camera->RenderBaseViewMatrix();
 
 	// TODO: see if initialization should happen in a constructor
@@ -65,7 +66,7 @@ bool Scene::Initialize(ID3D11Device* device, logic::GameLogic *logic)
 	// Lade assets TODO
 	logic->RegisterEntities(m_tiles[0], assetBits);
 
-	m_models = io::LoadModels(assetBits.modelFiles, device);
+	io::LoadModels(assetBits.modelFiles);
 
 
 	return true;

@@ -1,5 +1,6 @@
 #include "../../header/io/loader.h"
 #include "../../header/io/assetloader.h"
+#include "../../header/io/modelmanager.h"
 
 #include "../../header/logic/gameobjects.h"
 
@@ -155,6 +156,7 @@ SceneMeta LoadSceneMeta(int sceneID)
 	return meta;
 }
 
+
 bool LoadEntities(logic::GameLogic *logic, ecs::Manager<AllSettings> &mgr, AssetFiles &bits)
 {
 	FILE *fp;
@@ -179,13 +181,8 @@ bool LoadEntities(logic::GameLogic *logic, ecs::Manager<AllSettings> &mgr, Asset
 }
 
 
-std::vector<gv::Model> LoadModels(BitVec &modelBits, ID3D11Device *device, int sceneID)
+bool LoadModels(BitVec &modelBits, int sceneID)
 {
-	auto models = std::vector<gv::Model>(modelBits.size());
-	auto tmp = std::vector<gv::Model>();
-
-	auto tuple = ecs::MPL::Impl::TypeTuple<gv::VertexList>();
-
 	std::ifstream fin(GetPathScenes(sceneID, FILE_MODELS));
 	// Check if it was successful in opening the file.
 	if (fin.fail() == true)
@@ -206,17 +203,39 @@ std::vector<gv::Model> LoadModels(BitVec &modelBits, ID3D11Device *device, int s
 			continue;
 		}
 
-		auto load = [&](auto t) {
-			ubrot::io::LoadModel<ECS_TYPE(t)>(device, GetFileAssets(DIR_MODELS, name), models[i]);
-		};
-		ecs::MPL::VisitAt(tuple, vertexIndex, load);
+		if (!LoadModel(name, vertexIndex, i))
+		{
+			return false;
+		}
 
 	}
 
 	fin.close();
 
-	return models;
+	return true;
 }
+
+bool LoadModel(
+	std::string filename,
+	std::size_t vertexIndex,
+	std::size_t modelIndex
+)
+{
+	auto result = false;
+	auto tuple = ecs::MPL::Impl::TypeTuple<gv::VertexList>();
+
+	auto model = gv::Model();
+	auto load = [&](auto t) {
+		result = ubrot::io::LoadModel<ECS_TYPE(t)>(GetFileAssets(DIR_MODELS, filename.c_str()), model);
+	};
+	// Load the model with the specified vertex type
+	ecs::MPL::VisitAt(tuple, vertexIndex, load);
+	// Add the model to the model manager
+	models::AddModel(modelIndex, model);
+
+	return result;
+}
+
 
 };
 };

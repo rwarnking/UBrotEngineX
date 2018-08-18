@@ -1,6 +1,19 @@
 #include "../../header/logic/chess.h"
 
 #include "../../header/scene.h"
+#include "../../header/physics/physics.h"
+#include "../../header/io/modelmanager.h"
+
+namespace gv = ubrot::graphics::vertices;
+
+const auto FieldModel = ubrot::models::Procedural::Plane;
+
+// TODO: ueberarbeiten ?
+Chess::Chess(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
+{
+	m_input->Initialize(hinstance, hwnd, screenWidth, screenHeight);
+}
+
 
 void Chess::HandleComponent(
 	ecs::Manager<AllSettings>& mgr,
@@ -11,6 +24,7 @@ void Chess::HandleComponent(
 {
 }
 
+
 void Chess::HandleTag(
 	ecs::Manager<AllSettings>& mgr,
 	ecs::EntityIndex & entity,
@@ -18,8 +32,11 @@ void Chess::HandleTag(
 {
 }
 
+
 void Chess::RegisterEntities(ubrot::Tile &tile, ubrot::io::AssetFiles &assetBits)
 {
+	RegisterModels();
+
 	auto& mgr = tile.GetManager();
 
 	auto boardWidth = 8;
@@ -242,19 +259,158 @@ void Chess::RegisterEntities(ubrot::Tile &tile, ubrot::io::AssetFiles &assetBits
 			mgr.addTag<TBlackFigure>(k);
 		}
 	}
+
+	auto fieldModelIndex = ubrot::models::GetProdIndex(FieldModel);;
+	// Fields
+	for (auto i = 0; i < boardWidth; i++)
+	{
+		for (auto j = 0; j < boardWidth; j++)
+		{
+			auto f(mgr.createIndex());
+
+			// Components
+			auto& trans(mgr.addComponent<ecs::CTransform>(f, ecs::CTransform()));
+			trans.position = DirectX::XMFLOAT3(
+				startX + i * fieldSize,
+				-0.05f,
+				startZ + j * fieldSize
+			);
+			trans.rotation = DirectX::XMFLOAT3(DirectX::XM_PI/2 , 0.f, 0.f); // TODO: degree
+			trans.scale = DirectX::XMFLOAT3(1.f, 1.f, 1.f);
+
+			auto& pos(mgr.addComponent<CFieldPos>(f, CFieldPos()));
+			pos.x = i < boardWidth ? i + 1 : (i + 1) % boardWidth;
+			pos.y = i < boardWidth ? 1 : boardWidth;
+
+			auto& model(mgr.addComponent<ecs::CModel>(f).index);
+			model = fieldModelIndex;
+			mgr.addTag<ecs::TProcedural>(f); // indicate that this is not a "regular" model
+
+			auto& color(mgr.addComponent<ecs::CColor>(f).color);
+			if ((i + j) % 2 == 1)
+			{
+				color = DirectX::XMFLOAT4(0.f, 0.545f, 0.545f, 1.f); //colorWhite;
+				mgr.addTag<TWhiteFigure>(f);
+			}
+			else
+			{
+				color = DirectX::XMFLOAT4(0.737f, 0.561f, 0.561f, 1.f); //colorBlack;
+				mgr.addTag<TBlackFigure>(f);
+			}
+		}
+	}
 }
 
 
 void Chess::Process(ubrot::Scene &scene)
 {
-	// Check if a mouse button was pressed
+	m_input->Frame();
 
-	// Check intersection
+	auto& cam = scene.GetCamera();
+
+	CheckMovement(cam);
+
+	// Check if a mouse button was pressed
+	if (m_input->IsLeftMouseButtonDown())
+	{
+		int mPosX = 0; // TODO als rückgabe ?
+		int mPosY = 0;
+		m_input->GetMouseLocation(mPosX, mPosY);
+
+		int intersect = -1;
+		auto& mgr = scene.GetTiles()[0].GetManager(); // TODO
+		// For all entities that are either a figure or a field
+		// perform an intresection test
+		mgr.forEntitiesMatching<SCheckIntersect>(
+			[&](auto index, auto &cTrans, auto& cPos)
+		{
+			intersect = ubrot::physics::TestIntersection(
+				mPosX,
+				mPosY,
+				cTrans.position.x,
+				cTrans.position.y,
+				cTrans.position.z
+			);
+		});
+
+		if (intersect >= 0)
+		{
+			if (m_lastIntersect >= 0)
+			{
+				if (IsValidMove(mgr, m_lastIntersect, intersect))
+				{
+					// Perform the move if the clicked figure/field represents a valid move
+				}
+				else if (IsValidSelection(mgr, intersect))
+				{
+					// Set selection to just clicked figure/field if it was valid
+				}
+				else
+				{
+					// Reset selection if it was all invalid
+					m_lastIntersect = -1;
+				}
+			}
+			else if (IsValidSelection(mgr, intersect))
+			{
+				// If we did not select anything previously and this is a valid selection, save it
+				m_lastIntersect = intersect;
+			}
+		}
+	}
 
 }
 
-std::size_t Chess::FieldIndex(char one, std::size_t two)
+
+void Chess::RegisterModels()
 {
-	return (int)(one - 'a') * 8 + two;
+	ubrot::models::GetProdModel(FieldModel);
+}
+
+
+void Chess::CheckMovement(ubrot::graphics::Camera & camera)
+{
+	auto moveSpeed = 0.01f;
+
+	if (m_input->IsKeyDown(DIK_LEFTARROW))
+		camera.GoLeft(moveSpeed);
+	if (m_input->IsKeyDown(DIK_RIGHTARROW))
+		camera.GoRight(moveSpeed);
+
+	if (m_input->IsKeyDown(DIK_E))
+		camera.GoDown(moveSpeed);
+	if (m_input->IsKeyDown(DIK_Q))
+		camera.GoUp(moveSpeed);
+
+	if (m_input->IsKeyDown(DIK_W))
+		camera.GoForward(moveSpeed);
+	if (m_input->IsKeyDown(DIK_S))
+		camera.GoBack(moveSpeed);
+
+	camera.TurnLeft(m_input->IsKeyDown(DIK_A));
+	camera.TurnRight(m_input->IsKeyDown(DIK_D));
+
+	camera.TurnDown(m_input->IsKeyDown(DIK_DOWNARROW));
+	camera.TurnUp(m_input->IsKeyDown(DIK_UPARROW));
+}
+
+
+bool Chess::IsValidMove(ecs::Manager<AllSettings> &mgr, int from, int to)
+{
+	// TODO: check if the move is valid
+	auto& pos1 = mgr.getComponent<CFieldPos>((ecs::EntityIndex)from);
+	auto& pos2 = mgr.getComponent<CFieldPos>((ecs::EntityIndex)to);
+
+	// Check if pos2 is a figure and if so, if it has the correct color (opposite)
+
+	// Check what figure pos1 is and if pos2 is a valid move
+
+	return false;
+}
+
+
+bool Chess::IsValidSelection(ecs::Manager<AllSettings> &mgr, int selection)
+{
+	return false;
 }
 

@@ -1,20 +1,41 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Filename: assetloader.h
+///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../../header/graphics/vertextypes.h"
 
+//////////////
+// INCLUDES //
+//////////////
 #include <d3d11.h>
 #include <string>
 
+
+///////////////////////
+// MY CLASS INCLUDES //
+///////////////////////
+#include "../../header/graphics/vertextypes.h"
+#include "modelmanager.h"
 
 namespace ubrot
 {
 namespace io
 {
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
+/// TODO
+///////////////////////////////////////////////////////////////////////////////////////////////////
 namespace gv = graphics::vertices;
 
+
+void SetDevice(ID3D11Device* device);
+
+
 template <class T>
-bool LoadModel(ID3D11Device* device, std::string filename, gv::Model &model);
+bool LoadModel(
+	std::string filename,
+	gv::Model &model,
+	models::Procedural pModel = models::Procedural::NUMBER
+);
 
 template <class T>
 bool LoadModelFromOBJ(
@@ -50,7 +71,6 @@ bool LoadData(
 */
 template <class T>
 bool InitializeBuffers(
-	ID3D11Device* device,
 	gv::Model &model,
 	T *&vertices,
 	unsigned long *&indices

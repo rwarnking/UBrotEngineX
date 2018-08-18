@@ -10,25 +10,25 @@ namespace io
 
 namespace dx = DirectX;
 
+
+ID3D11Device *d3device;
+
+
+void SetDevice(ID3D11Device * device)
+{
+	d3device = device;
+}
+
+
 template <class T>
-bool LoadModel(ID3D11Device* device, std::string filename, gv::Model &model)
+bool LoadModel(std::string filename, gv::Model &model, models::Procedural pModel)
 {
 	// Vertices array
 	T *vertices;
 	// Indices array
 	unsigned long *indices;
 
-	//auto tmp = gv::TexVertex();
-	//gv::Create(tmp,
-	//	dx::XMFLOAT3(-1.0f, -1.0f, 0.0f),
-	//	dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
-	//	dx::XMFLOAT2(0.0f, 1.0f),
-	//	dx::XMFLOAT3(0.0f, 1.0f, 0.0f),
-	//	dx::XMFLOAT3(0.0f, 1.0f, 0.0f),
-	//	dx::XMFLOAT3(0.0f, 1.0f, 0.0f)
-	//);
-
-	if (!filename.empty())
+	if (pModel == models::Procedural::NUMBER) // TODO
 	{
 		if (!LoadModelFromOBJ<T>(filename, model, vertices, indices))
 		{
@@ -37,55 +37,14 @@ bool LoadModel(ID3D11Device* device, std::string filename, gv::Model &model)
 	}
 	else
 	{
-		const int vertexCount = 3;
-		const int indexCount = 3;
-
-		model.vertexCount = vertexCount;
-		model.indexCount = indexCount;
-
-		// Allocate temporary arrays for vertex and index data
-		//ColVertex* vertices = nullptr;
-		vertices = new T[vertexCount];
-		indices = new unsigned long[indexCount];
-
-		// Fill the vertex array (triangle)
-		// Bottom left
-		gv::Create(vertices[0],
-			dx::XMFLOAT3(-1.0f, -1.0f, 0.0f),
-			dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
-			dx::XMFLOAT2(),
-			dx::XMFLOAT3(),
-			dx::XMFLOAT3(),
-			dx::XMFLOAT3()
-		);
-
-		// Top middle
-		gv::Create(vertices[1],
-			dx::XMFLOAT3(0.0f, 1.0f, 0.0f),
-			dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
-			dx::XMFLOAT2(),
-			dx::XMFLOAT3(),
-			dx::XMFLOAT3(),
-			dx::XMFLOAT3()
-		);
-
-		// Bottom right
-		gv::Create(vertices[2],
-			dx::XMFLOAT3(1.0f, -1.0f, 0.0f),
-			dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
-			dx::XMFLOAT2(),
-			dx::XMFLOAT3(),
-			dx::XMFLOAT3(),
-			dx::XMFLOAT3()
-		);
-
-		// Fill the index array
-		indices[0] = 0;  // Bottom left
-		indices[1] = 1;  // Top middle
-		indices[2] = 2;  // Bottom right
-
+		switch (pModel)
+		{
+			case models::Procedural::Cube: GenerateCube<T>(model, vertices, indices); break;
+			case models::Procedural::Plane: GeneratePlane<T>(model, vertices, indices); break;
+			default: GenerateTriangle<T>(model, vertices, indices); break;
+		}
 	}
-	return InitializeBuffers(device, model, vertices, indices);
+	return InitializeBuffers(model, vertices, indices);
 }
 
 
@@ -420,7 +379,6 @@ bool LoadData(
 
 template <class T>
 bool InitializeBuffers(
-	ID3D11Device *device,
 	gv::Model &model,
 	T *&vertices,
 	unsigned long *&indices
@@ -445,7 +403,7 @@ bool InitializeBuffers(
 
 	// Create the vertex buffer and store it in m_vertexBuffer
 
-	result = device->CreateBuffer(
+	result = d3device->CreateBuffer(
 		&vertexBufferDesc,
 		&vertexData,
 		model.vertexBuffer.GetAddressOf()
@@ -469,7 +427,7 @@ bool InitializeBuffers(
 	indexData.SysMemSlicePitch = 0;
 
 	// Create the index buffer and store it in m_indexBuffer
-	result = device->CreateBuffer(&indexBufferDesc, &indexData, model.indexBuffer.GetAddressOf());
+	result = d3device->CreateBuffer(&indexBufferDesc, &indexData, model.indexBuffer.GetAddressOf());
 	if (FAILED(result))
 	{
 		return false;
@@ -482,12 +440,136 @@ bool InitializeBuffers(
 	return true;
 }
 
-template bool LoadModel<gv::SimVertex>(ID3D11Device* device, std::string fn, gv::Model &model);
-template bool LoadModel<gv::ColVertex>(ID3D11Device* device, std::string fn, gv::Model &model);
-template bool LoadModel<gv::TexVertex>(ID3D11Device* device, std::string fn, gv::Model &model);
-template bool LoadModel<gv::LigVertex>(ID3D11Device* device, std::string fn, gv::Model &model);
-template bool LoadModel<gv::NomVertex>(ID3D11Device* device, std::string fn, gv::Model &model);
-template bool LoadModel<gv::TesVertex>(ID3D11Device* device, std::string fn, gv::Model &model);
+
+template <class T>
+void GenerateTriangle(gv::Model &model, T* &vertices, unsigned long* &indices)
+{
+	const int vertexCount = 3;
+	const int indexCount = 3;
+
+	model.vertexCount = vertexCount;
+	model.indexCount = indexCount;
+
+	// Allocate temporary arrays for vertex and index data
+	//ColVertex* vertices = nullptr;
+	vertices = new T[vertexCount];
+	indices = new unsigned long[indexCount];
+
+	// Fill the vertex array (triangle)
+	// Bottom left
+	gv::Create(vertices[0],
+		dx::XMFLOAT3(-1.0f, -1.0f, 0.0f),
+		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
+		dx::XMFLOAT2(),
+		dx::XMFLOAT3(),
+		dx::XMFLOAT3(),
+		dx::XMFLOAT3()
+	);
+
+	// Top middle
+	gv::Create(vertices[1],
+		dx::XMFLOAT3(0.0f, 1.0f, 0.0f),
+		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
+		dx::XMFLOAT2(),
+		dx::XMFLOAT3(),
+		dx::XMFLOAT3(),
+		dx::XMFLOAT3()
+	);
+
+	// Bottom right
+	gv::Create(vertices[2],
+		dx::XMFLOAT3(1.0f, -1.0f, 0.0f),
+		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
+		dx::XMFLOAT2(),
+		dx::XMFLOAT3(),
+		dx::XMFLOAT3(),
+		dx::XMFLOAT3()
+	);
+
+	// Fill the index array
+	indices[0] = 0;  // Bottom left
+	indices[1] = 1;  // Top middle
+	indices[2] = 2;  // Bottom right
+}
+
+
+template <class T>
+void GeneratePlane(gv::Model &model, T* &vertices, unsigned long* &indices)
+{
+	const int vertexCount = 4*2;
+	const int indexCount = 6;
+
+	model.vertexCount = vertexCount;
+	model.indexCount = indexCount;
+
+	// Allocate temporary arrays for vertex and index data
+	//ColVertex* vertices = nullptr;
+	vertices = new T[vertexCount];
+	indices = new unsigned long[indexCount];
+
+	// Fill the vertex array (triangle)
+	// Bottom left
+	gv::Create(vertices[0],
+		dx::XMFLOAT3(-0.5f, -0.5f, 0.f),
+		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
+		dx::XMFLOAT2(),	dx::XMFLOAT3(),
+		dx::XMFLOAT3(),	dx::XMFLOAT3()
+	);
+
+	// Top left
+	gv::Create(vertices[1],
+		dx::XMFLOAT3(-0.5f, 0.5f, 0.f),
+		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
+		dx::XMFLOAT2(),	dx::XMFLOAT3(),
+		dx::XMFLOAT3(),	dx::XMFLOAT3()
+	);
+
+	// Bottom right
+	gv::Create(vertices[2],
+		dx::XMFLOAT3(0.5f, -0.5f, 0.f),
+		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
+		dx::XMFLOAT2(),	dx::XMFLOAT3(),
+		dx::XMFLOAT3(),	dx::XMFLOAT3()
+	);
+
+	// Top right
+	gv::Create(vertices[3],
+		dx::XMFLOAT3(0.5f, 0.5f, 0.f),
+		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
+		dx::XMFLOAT2(),	dx::XMFLOAT3(),
+		dx::XMFLOAT3(),	dx::XMFLOAT3()
+	);
+
+	// Fill the index array
+	indices[0] = 0;  // Bottom left
+	indices[1] = 1;  // Top left
+	indices[2] = 2;  // Bottom right
+	indices[3] = 3;  // Bottom right
+	indices[4] = 2;  // Top left
+	indices[5] = 1;  // Top right
+
+}
+
+
+template <class T>
+void GenerateCube(gv::Model &model, T* &vertices, unsigned long* &indices)
+{
+	// TODO:
+}
+
+
+template bool
+LoadModel<gv::SimVertex>(std::string fn, gv::Model &model, models::Procedural pModel);
+template bool
+LoadModel<gv::ColVertex>(std::string fn, gv::Model &model, models::Procedural pModel);
+template bool
+LoadModel<gv::TexVertex>(std::string fn, gv::Model &model, models::Procedural pModel);
+template bool
+LoadModel<gv::LigVertex>(std::string fn, gv::Model &model, models::Procedural pModel);
+template bool
+LoadModel<gv::NomVertex>(std::string fn, gv::Model &model, models::Procedural pModel);
+template bool
+LoadModel<gv::TesVertex>(std::string fn, gv::Model &model, models::Procedural pModel);
 
 };
 };

@@ -3,6 +3,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #include "../header/game.h"
 #include "../header/logic/chess.h"
+#include "../header/physics/physics.h"
+#include "../header/io/assetloader.h"
 
 #include <chrono> // TODO delete
 #include <array> // TODO delete
@@ -50,8 +52,11 @@ bool Game::Initialize()
 		MessageBox(m_hwnd, L"Could not initialize the Renderer object.", L"Error", MB_OK);
 		return false;
 	}
+	// TODO
+	models::Initialize();
+	io::SetDevice(m_renderer->GetD3D().GetDevice());
 
-	m_logic = new Chess(); // TODO: !
+	m_logic = new Chess(m_hinstance, m_hwnd, screenWidth, screenHeight); // TODO: !
 	if (!m_logic)
 	{
 		return false;
@@ -150,10 +155,10 @@ void Game::Run()
 				done = true;
 			}
 		}
-
+		/*
 		auto end = chrono::system_clock::now();
 		looptime[count] = chrono::duration_cast<chrono::microseconds>(end - start).count();
-		count++;
+		count++;*/
 	}
 
 	auto sum = 0LL;
@@ -178,6 +183,11 @@ bool Game::Frame()
 	// Update all utility functions
 	m_timer->Frame();
 	float x = m_timer->GetTime();
+
+	auto& d3d = m_renderer->GetD3D();
+	auto& cam = m_scene->GetCamera();
+
+	physics::SetUniforms(cam.GetViewMatrix(), d3d.GetProjectionMatrix(), d3d.GetWorldMatrix());
 
 	// Render the scene
 	m_renderer->Process(*m_scene);

@@ -1,11 +1,31 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Filename: chess.h
+///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "gamelogic.h"
 
+//////////////
+// INCLUDES //
+//////////////
+#include <array>
+
+
+///////////////////////
+// MY CLASS INCLUDES //
+///////////////////////
+#include "gamelogic.h"
+#include "../graphics/camera.h"
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Class name: Chess
+/// TODO
+///////////////////////////////////////////////////////////////////////////////////////////////////
 class Chess : public ubrot::logic::GameLogic
 {
 public:
 
+	Chess(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight);
 	~Chess() {}
 
 	void HandleComponent(
@@ -24,12 +44,20 @@ public:
 	void RegisterEntities(ubrot::Tile &tile, ubrot::io::AssetFiles &assetBits) override;
 	void Process(ubrot::Scene &scene) override;
 
-	static constexpr std::size_t MAX_ENTITIES = 32;
+	static constexpr std::size_t MAX_ENTITIES = 32 + 64;
 
 private:
 
 	// Own stuff and methods
-	using EntityHandle = ecs::Manager<ecs::MySettings>::Handle;
+	void RegisterModels();
+
+	void CheckMovement(ubrot::graphics::Camera &camera);
+
+	// Chess logic stuff
+	bool IsValidMove(ecs::Manager<AllSettings> &mgr, int from, int to);
+	bool IsValidSelection(ecs::Manager<AllSettings> &mgr, int selection);
+
+	using EntityIndex = ecs::EntityIndex;
 
 	enum class Figure : short {
 		Bishop,
@@ -40,8 +68,5 @@ private:
 		Rook
 	};
 
-	std::size_t FieldIndex(char one, std::size_t two);
-
-	// TODO: template parameter
-	EntityHandle m_lastIntersect;
+	int m_lastIntersect;
 };

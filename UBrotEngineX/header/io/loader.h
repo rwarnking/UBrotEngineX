@@ -29,6 +29,9 @@ class GameLogic;
 };
 namespace io
 {
+///////////////////////////////////////////////////////////////////////////////////////////////////
+/// TODO
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct SceneMeta
 {
@@ -78,12 +81,20 @@ struct AssetFiles
 
 SceneMeta LoadSceneMeta(int sceneID=0);
 
+
 // läd entitys eines tiles aus File
 bool LoadEntities(logic::GameLogic *logic, ecs::Manager<AllSettings> &mgr, AssetFiles &bits);
 
 // TODO sceneID
-std::vector<graphics::vertices::Model>
-	LoadModels(BitVec &modelBits, ID3D11Device *device, int sceneID = 0);
+bool LoadModels(BitVec &modelBits, int sceneID = 0);
+
+// Load model (where index is known)
+bool LoadModel(
+	std::string filename,
+	std::size_t vertexIndex,
+	std::size_t modelIndex
+);
+
 
 };
 };

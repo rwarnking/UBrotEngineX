@@ -37,6 +37,12 @@
     <Filter Include="Quelldateien\Logic">
       <UniqueIdentifier>{aa4e7864-9a8b-482c-ab43-567145645763}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\Physics">
+      <UniqueIdentifier>{63098307-30e1-45cb-8e3e-9fe787c60603}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Physics">
+      <UniqueIdentifier>{7e6f69dd-e692-4d04-9a27-a676bce08dff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\application.cpp">
@@ -80,6 +86,15 @@
     </ClCompile>
     <ClCompile Include="source\graphics\colorshader.cpp">
       <Filter>Quelldateien\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="source\logic\input.cpp">
+      <Filter>Quelldateien\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="source\physics\physics.cpp">
+      <Filter>Quelldateien\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="source\io\modelmanager.cpp">
+      <Filter>Quelldateien\IO</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +151,15 @@
     </ClInclude>
     <ClInclude Include="header\graphics\colorshader.h">
       <Filter>Headerdateien\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="header\logic\input.h">
+      <Filter>Headerdateien\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="header\physics\physics.h">
+      <Filter>Headerdateien\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="header\io\modelmanager.h">
+      <Filter>Headerdateien\IO</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
