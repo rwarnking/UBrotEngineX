@@ -21,6 +21,7 @@
 #include "../scene.h"
 #include "shaderloader.h"
 #include "colorshader.h"
+#include "textureshader.h"
 
 
 namespace ubrot
@@ -32,6 +33,12 @@ const bool VSYNC_ENABLED = false;
 const bool FULL_SCREEN = false;
 extern float SCREEN_DEPTH;
 extern float SCREEN_NEAR;
+
+extern int SCREEN_WIDTH;
+extern int SCREEN_HEIGHT;
+
+extern int g_mouseX;
+extern int g_mouseY;
 
 namespace graphics
 {
@@ -97,6 +104,7 @@ private:
 	std::unique_ptr<Direct3D> m_direct3d;
 	std::unique_ptr<ShaderLoader> m_colorShader;
 	std::unique_ptr<ColorShader> m_oneColorShader;
+	std::unique_ptr<TextureShader> m_textureShader;
 };
 };
 };

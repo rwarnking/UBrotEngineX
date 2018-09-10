@@ -16,6 +16,13 @@
 #include "gamelogic.h"
 #include "../graphics/camera.h"
 
+namespace ubrot
+{
+
+extern int g_mouseX;
+extern int g_mouseY;
+
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Class name: Chess
@@ -68,5 +75,5 @@ private:
 		Rook
 	};
 
-	int m_lastIntersect;
+	int m_lastIntersect = -1;
 };

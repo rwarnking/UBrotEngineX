@@ -93,8 +93,11 @@
     <ClCompile Include="source\physics\physics.cpp">
       <Filter>Quelldateien\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="source\io\modelmanager.cpp">
+    <ClCompile Include="source\io\assetmanager.cpp">
       <Filter>Quelldateien\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="source\graphics\textureshader.cpp">
+      <Filter>Quelldateien\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -158,8 +161,11 @@
     <ClInclude Include="header\physics\physics.h">
       <Filter>Headerdateien\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="header\io\modelmanager.h">
+    <ClInclude Include="header\io\assetmanager.h">
       <Filter>Headerdateien\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="header\graphics\textureshader.h">
+      <Filter>Headerdateien\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +179,13 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="shader\onecolor.vs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="packages.config" />
+    <None Include="shader\texture.vs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shader\texture.fs">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

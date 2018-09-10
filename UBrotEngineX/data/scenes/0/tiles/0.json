@@ -1,3 +1,16 @@
 {
-    "entities": [ ]
+    "entities": [
+        {
+            "components": {
+                "model": 6,
+                "transform": {
+                    "pos": [0.0, 0.0, 0.0],
+                    "rot": [0.0, 0.0, 0.0],
+                    "scale": [1.0, 1.0, 1.0]
+                },
+                "texture": 0
+            },
+            "tags": []
+        }
+    ]
 }

@@ -15,7 +15,7 @@
 // MY CLASS INCLUDES //
 ///////////////////////
 #include "../../header/graphics/vertextypes.h"
-#include "modelmanager.h"
+#include "assetmanager.h"
 
 namespace ubrot
 {
@@ -30,11 +30,13 @@ namespace gv = graphics::vertices;
 void SetDevice(ID3D11Device* device);
 
 
+ID3D11ShaderResourceView* LoadTexture(std::string filename);
+
 template <class T>
 bool LoadModel(
 	std::string filename,
 	gv::Model &model,
-	models::Procedural pModel = models::Procedural::NUMBER
+	assets::Procedural pModel = assets::Procedural::NUMBER
 );
 
 template <class T>
@@ -61,8 +63,7 @@ bool LoadData(
 	int normalCount,
 	int faceCount,
 	T* &vertices2,
-	unsigned long* &indices,
-	int tex_num
+	unsigned long* &indices
 );
 
 /**

@@ -53,7 +53,7 @@ bool Game::Initialize()
 		return false;
 	}
 	// TODO
-	models::Initialize();
+	assets::Initialize();
 	io::SetDevice(m_renderer->GetD3D().GetDevice());
 
 	m_logic = new Chess(m_hinstance, m_hwnd, screenWidth, screenHeight); // TODO: !
@@ -94,6 +94,8 @@ bool Game::Initialize()
 	auto sum = chrono::duration_cast<chrono::milliseconds>(end - start).count();
 
 	MessageBox(m_hwnd, std::to_wstring(sum).c_str(), L"Initialization time in ms", MB_OK);
+
+	SetCursorPos(0, 0);
 
 	return true;
 }
@@ -188,10 +190,11 @@ bool Game::Frame()
 	auto& cam = m_scene->GetCamera();
 
 	physics::SetUniforms(cam.GetViewMatrix(), d3d.GetProjectionMatrix(), d3d.GetWorldMatrix());
+	physics::SetCameraPosition(cam.GetPosition());
 
 	// Render the scene
-	m_renderer->Process(*m_scene);
 	m_logic->Process(*m_scene);
+	m_renderer->Process(*m_scene);
 
 	// Execute the game logic
 
@@ -274,7 +277,7 @@ void Game::InitializeWindows(int& screenWidth, int& screenHeight)
 	SetForegroundWindow(m_hwnd);
 	SetFocus(m_hwnd);
 
-	ShowCursor(false);
+	ShowCursor(true);
 
 	return;
 }
@@ -308,24 +311,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 	switch (umessage)
 	{
 		// Check if the window is being destroyed.
-	case WM_DESTROY:
-	{
-		PostQuitMessage(0);
-		return 0;
-	}
+		case WM_DESTROY:
+		{
+			PostQuitMessage(0);
+			return 0;
+		}
 
-	// Check if the window is being closed.
-	case WM_CLOSE:
-	{
-		PostQuitMessage(0);
-		return 0;
-	}
+		// Check if the window is being closed.
+		case WM_CLOSE:
+		{
+			PostQuitMessage(0);
+			return 0;
+		}
 
-	// Pass all other messages to the message handler.
-	default:
-	{
-		return DefWindowProc(hwnd, umessage, wparam, lparam);
-	}
+		// Pass all other messages to the message handler.
+		default:
+		{
+			return DefWindowProc(hwnd, umessage, wparam, lparam);
+		}
 	}
 }
 

@@ -31,11 +31,11 @@ struct CTransform
 };
 struct CModel
 {
-	std::size_t index;
+	int index;
 };
 struct CTexture
 {
-	std::size_t index;
+	int index;
 };
 struct CColor
 {

@@ -2,7 +2,7 @@
 // Filename: renderer.cpp
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #include "../../header/graphics/renderer.h"
-#include "../../header/io/modelmanager.h"
+#include "../../header/io/assetmanager.h"
 
 using namespace DirectX;
 
@@ -15,6 +15,8 @@ Renderer::Renderer()
 {
 	m_direct3d = nullptr;
 	m_colorShader = nullptr;
+	m_oneColorShader = nullptr;
+	m_textureShader = nullptr;
 }
 
 
@@ -71,6 +73,16 @@ bool Renderer::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	m_oneColorShader->InitializeShader(m_direct3d->GetDevice(), hwnd);
 
+
+	// TODO array das dynamisch nach bedarf geladen wird
+	m_textureShader = std::make_unique<TextureShader>();
+	if (!m_textureShader)
+	{
+		return false;
+	}
+
+	m_textureShader->InitializeShader(m_direct3d->GetDevice(), hwnd);
+
 	return true;
 }
 
@@ -115,6 +127,7 @@ bool Renderer::RenderScene(Scene &scene, Camera &camera)
 	auto viewMatrix = camera.GetViewMatrix();
 	auto worldMatrix = m_direct3d->GetWorldMatrix();
 	auto projectionMatrix = m_direct3d->GetProjectionMatrix();
+	auto orthoMatrix = m_direct3d->GetOrthoMatrix();
 
 	//auto& model = scene.GetModels();
 
@@ -152,6 +165,9 @@ bool Renderer::RenderScene(Scene &scene, Camera &camera)
 		static float rot = 0.0f; // TODO rausnehmen
 		//rot += 0.0001f;
 
+		auto color = DirectX::XMFLOAT4(
+			(float)g_mouseX / (float)SCREEN_WIDTH / 2.0f +
+			(float)g_mouseY / (float)SCREEN_HEIGHT / 2.0f, 0, 0, 0);
 		mgr.forEntitiesMatching<ecs::SRender>(
 			[&](auto index, auto& cModel, auto& cTransform, auto& cColor)
 		{
@@ -163,7 +179,7 @@ bool Renderer::RenderScene(Scene &scene, Camera &camera)
 				XMMatrixTranslation(cTransform.position.x, cTransform.position.y, cTransform.position.z)
 			);
 
-			auto& model = models::GetModel(cModel.index, mgr.hasTag<ecs::TProcedural>(index));
+			auto& model = assets::GetModel(cModel.index);
 			RenderModel<vertices::SimVertex>(m_direct3d->GetDeviceContext(), model);
 			result = m_oneColorShader->Render(
 				m_direct3d->GetDeviceContext(),
@@ -185,12 +201,34 @@ bool Renderer::RenderScene(Scene &scene, Camera &camera)
 				XMMatrixTranslation(cTransform.position.x, cTransform.position.y, cTransform.position.z)
 			);
 
-			auto& model = models::GetModel(cModel.index, mgr.hasTag<ecs::TProcedural>(index));
+			auto& model = assets::GetModel(cModel.index);
 			RenderModel<vertices::ColVertex>(m_direct3d->GetDeviceContext(), model);
 			result = m_colorShader->Render(
 				m_direct3d->GetDeviceContext(),
 				worldMatrix, viewMatrix, projectionMatrix,
 				model.indexCount
+			);
+		});
+
+		mgr.forEntitiesMatching<ecs::SRenderTex>(
+			[&](auto index, auto& cModel, auto& cTransform, auto& cTexture)
+		{
+			// Transform the Object.
+			worldMatrix = XMMatrixMultiply(
+				XMMatrixMultiply(
+					XMMatrixScaling(cTransform.scale.x, cTransform.scale.y, cTransform.scale.z),
+					XMMatrixRotationRollPitchYaw(cTransform.rotation.x, cTransform.rotation.y + rot, cTransform.rotation.z)),
+				XMMatrixTranslation(cTransform.position.x, cTransform.position.y, cTransform.position.z)
+			);
+
+			auto texture = assets::GetTexture(0);
+			auto& model = assets::GetModel(cModel.index);
+			RenderModel<vertices::TexVertex>(m_direct3d->GetDeviceContext(), model);
+			result = m_textureShader->Render(
+				m_direct3d->GetDeviceContext(),
+				worldMatrix, viewMatrix, projectionMatrix,
+				model.indexCount,
+				texture
 			);
 		});
 

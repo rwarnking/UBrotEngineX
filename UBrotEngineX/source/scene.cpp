@@ -67,7 +67,7 @@ bool Scene::Initialize(ID3D11Device* device, logic::GameLogic *logic)
 	logic->RegisterEntities(m_tiles[0], assetBits);
 
 	io::LoadModels(assetBits.modelFiles);
-
+	io::LoadTextures();
 
 	return true;
 }

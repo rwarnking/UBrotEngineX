@@ -1,5 +1,8 @@
 #include "../../header/io/assetloader.h"
 
+#include "DDSTextureLoader.h"
+#include <wrl/client.h>
+
 #include <fstream>
 #include <vector>
 
@@ -20,15 +23,153 @@ void SetDevice(ID3D11Device * device)
 }
 
 
+ID3D11ShaderResourceView * LoadTexture(std::string filename)
+{
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+
+	// Be careful to specify a format when creating the dds file!
+	auto result = DirectX::CreateDDSTextureFromFile(
+		d3device,
+		L"D:/07_Projekte/UBrotEngineX/UBrotEngineX/data/assets/textures/Pebbles.dds",
+		nullptr,
+		srv.GetAddressOf()
+	);
+
+	if (FAILED(result))
+	{
+		//throw std::runtime_error("");
+	}
+
+	return srv.Detach();
+}
+
+
 template <class T>
-bool LoadModel(std::string filename, gv::Model &model, models::Procedural pModel)
+void GenerateCube(gv::Model &model, T* &vertices, unsigned long* &indices)
+{
+	// TODO:
+}
+
+
+template <class T>
+void GenerateTriangle(gv::Model &model, T* &vertices, unsigned long* &indices)
+{
+	const int vertexCount = 3;
+	const int indexCount = 3;
+
+	model.vertexCount = vertexCount;
+	model.indexCount = indexCount;
+
+	// Allocate temporary arrays for vertex and index data
+	//ColVertex* vertices = nullptr;
+	vertices = new T[vertexCount];
+	indices = new unsigned long[indexCount];
+
+	// Fill the vertex array (triangle)
+	// Bottom left
+	gv::Create(vertices[0],
+		dx::XMFLOAT3(-1.0f, -1.0f, 0.0f),
+		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
+		dx::XMFLOAT2(),
+		dx::XMFLOAT3(),
+		dx::XMFLOAT3(),
+		dx::XMFLOAT3()
+	);
+
+	// Top middle
+	gv::Create(vertices[1],
+		dx::XMFLOAT3(0.0f, 1.0f, 0.0f),
+		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
+		dx::XMFLOAT2(),
+		dx::XMFLOAT3(),
+		dx::XMFLOAT3(),
+		dx::XMFLOAT3()
+	);
+
+	// Bottom right
+	gv::Create(vertices[2],
+		dx::XMFLOAT3(1.0f, -1.0f, 0.0f),
+		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
+		dx::XMFLOAT2(),
+		dx::XMFLOAT3(),
+		dx::XMFLOAT3(),
+		dx::XMFLOAT3()
+	);
+
+	// Fill the index array
+	indices[0] = 0;  // Bottom left
+	indices[1] = 1;  // Top middle
+	indices[2] = 2;  // Bottom right
+}
+
+
+template <class T>
+void GeneratePlane(gv::Model &model, T* &vertices, unsigned long* &indices)
+{
+	const int vertexCount = 4 * 2;
+	const int indexCount = 6;
+
+	model.vertexCount = vertexCount;
+	model.indexCount = indexCount;
+
+	// Allocate temporary arrays for vertex and index data
+	//ColVertex* vertices = nullptr;
+	vertices = new T[vertexCount];
+	indices = new unsigned long[indexCount];
+
+	// Fill the vertex array (triangle)
+	// Bottom left
+	gv::Create(vertices[0],
+		dx::XMFLOAT3(-0.5f, -0.5f, 0.f),
+		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
+		dx::XMFLOAT2(), dx::XMFLOAT3(),
+		dx::XMFLOAT3(), dx::XMFLOAT3()
+	);
+
+	// Top left
+	gv::Create(vertices[1],
+		dx::XMFLOAT3(-0.5f, 0.5f, 0.f),
+		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
+		dx::XMFLOAT2(), dx::XMFLOAT3(),
+		dx::XMFLOAT3(), dx::XMFLOAT3()
+	);
+
+	// Bottom right
+	gv::Create(vertices[2],
+		dx::XMFLOAT3(0.5f, -0.5f, 0.f),
+		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
+		dx::XMFLOAT2(), dx::XMFLOAT3(),
+		dx::XMFLOAT3(), dx::XMFLOAT3()
+	);
+
+	// Top right
+	gv::Create(vertices[3],
+		dx::XMFLOAT3(0.5f, 0.5f, 0.f),
+		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
+		dx::XMFLOAT2(), dx::XMFLOAT3(),
+		dx::XMFLOAT3(), dx::XMFLOAT3()
+	);
+
+	// Fill the index array
+	indices[0] = 0;  // Bottom left
+	indices[1] = 1;  // Top left
+	indices[2] = 2;  // Bottom right
+	indices[3] = 3;  // Bottom right
+	indices[4] = 2;  // Top left
+	indices[5] = 1;  // Top right
+
+}
+
+
+template <class T>
+bool LoadModel(std::string filename, gv::Model &model, assets::Procedural pModel)
 {
 	// Vertices array
 	T *vertices;
 	// Indices array
 	unsigned long *indices;
 
-	if (pModel == models::Procedural::NUMBER) // TODO
+	if (pModel == assets::Procedural::NUMBER) // TODO
 	{
 		if (!LoadModelFromOBJ<T>(filename, model, vertices, indices))
 		{
@@ -39,8 +180,8 @@ bool LoadModel(std::string filename, gv::Model &model, models::Procedural pModel
 	{
 		switch (pModel)
 		{
-			case models::Procedural::Cube: GenerateCube<T>(model, vertices, indices); break;
-			case models::Procedural::Plane: GeneratePlane<T>(model, vertices, indices); break;
+			case assets::Procedural::Cube: GenerateCube<T>(model, vertices, indices); break;
+			case assets::Procedural::Plane: GeneratePlane<T>(model, vertices, indices); break;
 			default: GenerateTriangle<T>(model, vertices, indices); break;
 		}
 	}
@@ -66,7 +207,7 @@ bool LoadModelFromOBJ(
 	}
 
 	auto result = LoadData<T>(
-		filename,vertexCount, textureCount, normalCount, faceCount, vertices, indices, 0
+		filename,vertexCount, textureCount, normalCount, faceCount, vertices, indices
 	);
 	if (!result)
 	{
@@ -155,8 +296,7 @@ bool LoadData(
 	int normalCount,
 	int faceCount,
 	T* &vertices2,
-	unsigned long* &indices,
-	int tex_num
+	unsigned long* &indices
 )
 {
 	gv::Vertex *vertices, *texcoords, *normals;
@@ -441,135 +581,19 @@ bool InitializeBuffers(
 }
 
 
-template <class T>
-void GenerateTriangle(gv::Model &model, T* &vertices, unsigned long* &indices)
-{
-	const int vertexCount = 3;
-	const int indexCount = 3;
-
-	model.vertexCount = vertexCount;
-	model.indexCount = indexCount;
-
-	// Allocate temporary arrays for vertex and index data
-	//ColVertex* vertices = nullptr;
-	vertices = new T[vertexCount];
-	indices = new unsigned long[indexCount];
-
-	// Fill the vertex array (triangle)
-	// Bottom left
-	gv::Create(vertices[0],
-		dx::XMFLOAT3(-1.0f, -1.0f, 0.0f),
-		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
-		dx::XMFLOAT2(),
-		dx::XMFLOAT3(),
-		dx::XMFLOAT3(),
-		dx::XMFLOAT3()
-	);
-
-	// Top middle
-	gv::Create(vertices[1],
-		dx::XMFLOAT3(0.0f, 1.0f, 0.0f),
-		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
-		dx::XMFLOAT2(),
-		dx::XMFLOAT3(),
-		dx::XMFLOAT3(),
-		dx::XMFLOAT3()
-	);
-
-	// Bottom right
-	gv::Create(vertices[2],
-		dx::XMFLOAT3(1.0f, -1.0f, 0.0f),
-		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
-		dx::XMFLOAT2(),
-		dx::XMFLOAT3(),
-		dx::XMFLOAT3(),
-		dx::XMFLOAT3()
-	);
-
-	// Fill the index array
-	indices[0] = 0;  // Bottom left
-	indices[1] = 1;  // Top middle
-	indices[2] = 2;  // Bottom right
-}
-
-
-template <class T>
-void GeneratePlane(gv::Model &model, T* &vertices, unsigned long* &indices)
-{
-	const int vertexCount = 4*2;
-	const int indexCount = 6;
-
-	model.vertexCount = vertexCount;
-	model.indexCount = indexCount;
-
-	// Allocate temporary arrays for vertex and index data
-	//ColVertex* vertices = nullptr;
-	vertices = new T[vertexCount];
-	indices = new unsigned long[indexCount];
-
-	// Fill the vertex array (triangle)
-	// Bottom left
-	gv::Create(vertices[0],
-		dx::XMFLOAT3(-0.5f, -0.5f, 0.f),
-		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
-		dx::XMFLOAT2(),	dx::XMFLOAT3(),
-		dx::XMFLOAT3(),	dx::XMFLOAT3()
-	);
-
-	// Top left
-	gv::Create(vertices[1],
-		dx::XMFLOAT3(-0.5f, 0.5f, 0.f),
-		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
-		dx::XMFLOAT2(),	dx::XMFLOAT3(),
-		dx::XMFLOAT3(),	dx::XMFLOAT3()
-	);
-
-	// Bottom right
-	gv::Create(vertices[2],
-		dx::XMFLOAT3(0.5f, -0.5f, 0.f),
-		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
-		dx::XMFLOAT2(),	dx::XMFLOAT3(),
-		dx::XMFLOAT3(),	dx::XMFLOAT3()
-	);
-
-	// Top right
-	gv::Create(vertices[3],
-		dx::XMFLOAT3(0.5f, 0.5f, 0.f),
-		dx::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
-		dx::XMFLOAT2(),	dx::XMFLOAT3(),
-		dx::XMFLOAT3(),	dx::XMFLOAT3()
-	);
-
-	// Fill the index array
-	indices[0] = 0;  // Bottom left
-	indices[1] = 1;  // Top left
-	indices[2] = 2;  // Bottom right
-	indices[3] = 3;  // Bottom right
-	indices[4] = 2;  // Top left
-	indices[5] = 1;  // Top right
-
-}
-
-
-template <class T>
-void GenerateCube(gv::Model &model, T* &vertices, unsigned long* &indices)
-{
-	// TODO:
-}
-
 
 template bool
-LoadModel<gv::SimVertex>(std::string fn, gv::Model &model, models::Procedural pModel);
+LoadModel<gv::SimVertex>(std::string fn, gv::Model &model, assets::Procedural pModel);
 template bool
-LoadModel<gv::ColVertex>(std::string fn, gv::Model &model, models::Procedural pModel);
+LoadModel<gv::ColVertex>(std::string fn, gv::Model &model, assets::Procedural pModel);
 template bool
-LoadModel<gv::TexVertex>(std::string fn, gv::Model &model, models::Procedural pModel);
+LoadModel<gv::TexVertex>(std::string fn, gv::Model &model, assets::Procedural pModel);
 template bool
-LoadModel<gv::LigVertex>(std::string fn, gv::Model &model, models::Procedural pModel);
+LoadModel<gv::LigVertex>(std::string fn, gv::Model &model, assets::Procedural pModel);
 template bool
-LoadModel<gv::NomVertex>(std::string fn, gv::Model &model, models::Procedural pModel);
+LoadModel<gv::NomVertex>(std::string fn, gv::Model &model, assets::Procedural pModel);
 template bool
-LoadModel<gv::TesVertex>(std::string fn, gv::Model &model, models::Procedural pModel);
+LoadModel<gv::TesVertex>(std::string fn, gv::Model &model, assets::Procedural pModel);
 
 };
 };

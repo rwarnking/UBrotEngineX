@@ -27,9 +27,10 @@
     <ClCompile Include="source\graphics\direct3d.cpp" />
     <ClCompile Include="source\graphics\renderer.cpp" />
     <ClCompile Include="source\graphics\shaderloader.cpp" />
+    <ClCompile Include="source\graphics\textureshader.cpp" />
     <ClCompile Include="source\io\assetloader.cpp" />
     <ClCompile Include="source\io\loader.cpp" />
-    <ClCompile Include="source\io\modelmanager.cpp" />
+    <ClCompile Include="source\io\assetmanager.cpp" />
     <ClCompile Include="source\logic\chess.cpp" />
     <ClCompile Include="source\logic\input.cpp" />
     <ClCompile Include="source\physics\physics.cpp" />
@@ -47,10 +48,11 @@
     <ClInclude Include="header\graphics\direct3d.h" />
     <ClInclude Include="header\graphics\renderer.h" />
     <ClInclude Include="header\graphics\shaderloader.h" />
+    <ClInclude Include="header\graphics\textureshader.h" />
     <ClInclude Include="header\graphics\vertextypes.h" />
     <ClInclude Include="header\io\assetloader.h" />
     <ClInclude Include="header\io\loader.h" />
-    <ClInclude Include="header\io\modelmanager.h" />
+    <ClInclude Include="header\io\assetmanager.h" />
     <ClInclude Include="header\logic\chess.h" />
     <ClInclude Include="header\logic\gamelogic.h" />
     <ClInclude Include="header\logic\gameobjects.h" />
@@ -61,10 +63,13 @@
     <ClInclude Include="header\timer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="shader\color.fs" />
     <None Include="shader\color.vs" />
     <None Include="shader\onecolor.fs" />
     <None Include="shader\onecolor.vs" />
+    <None Include="shader\texture.fs" />
+    <None Include="shader\texture.vs" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -200,5 +205,12 @@
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\directxtk_desktop_2015.2018.8.18.2\build\native\directxtk_desktop_2015.targets" Condition="Exists('..\packages\directxtk_desktop_2015.2018.8.18.2\build\native\directxtk_desktop_2015.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\directxtk_desktop_2015.2018.8.18.2\build\native\directxtk_desktop_2015.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtk_desktop_2015.2018.8.18.2\build\native\directxtk_desktop_2015.targets'))" />
+  </Target>
 </Project>

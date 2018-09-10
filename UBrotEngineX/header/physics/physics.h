@@ -27,11 +27,12 @@ extern int SCREEN_HEIGHT;
 namespace physics
 {
 
+void SetCameraPosition(DirectX::XMFLOAT3 cam);
 
 void SetUniforms(DirectX::XMMATRIX view, DirectX::XMMATRIX proj, DirectX::XMMATRIX world);
 
 /// Get the field in board coordinates that the player selected using a ray intersection test
-int TestIntersection(int mPosX, int mPosY, float xModel, float yModel, float zModel);
+bool TestIntersection(int mPosX, int mPosY, float xModel, float yModel, float zModel);
 
 };
 };

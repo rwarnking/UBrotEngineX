@@ -2,11 +2,11 @@
 
 #include "../../header/scene.h"
 #include "../../header/physics/physics.h"
-#include "../../header/io/modelmanager.h"
+#include "../../header/io/assetmanager.h"
 
 namespace gv = ubrot::graphics::vertices;
 
-const auto FieldModel = ubrot::models::Procedural::Plane;
+const auto FieldModel = ubrot::assets::Procedural::Plane;
 
 // TODO: ueberarbeiten ?
 Chess::Chess(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
@@ -67,7 +67,7 @@ void Chess::RegisterEntities(ubrot::Tile &tile, ubrot::io::AssetFiles &assetBits
 		pos.y = i < boardWidth ? 1 : boardWidth;
 
 		auto& model(mgr.addComponent<ecs::CModel>(p).index);
-		model = (std::size_t)Figure::Pawn;
+		model = (int)Figure::Pawn;
 
 		assetBits.modelFiles[model] = true;
 
@@ -103,7 +103,7 @@ void Chess::RegisterEntities(ubrot::Tile &tile, ubrot::io::AssetFiles &assetBits
 		pos.y = i % 2 == 0 ? 1 : boardWidth;
 
 		auto& model(mgr.addComponent<ecs::CModel>(r).index);
-		model = (std::size_t)Figure::Rook;
+		model = (int)Figure::Rook;
 
 		assetBits.modelFiles[model] = true;
 
@@ -138,7 +138,7 @@ void Chess::RegisterEntities(ubrot::Tile &tile, ubrot::io::AssetFiles &assetBits
 		pos.y = i % 2 == 0 ? 1 : boardWidth;
 
 		auto& model(mgr.addComponent<ecs::CModel>(k).index);
-		model = (std::size_t)Figure::Knight;
+		model = (int)Figure::Knight;
 
 		assetBits.modelFiles[model] = true;
 
@@ -173,7 +173,7 @@ void Chess::RegisterEntities(ubrot::Tile &tile, ubrot::io::AssetFiles &assetBits
 		pos.y = i % 2 == 0 ? 1 : boardWidth;
 
 		auto& model(mgr.addComponent<ecs::CModel>(b).index);
-		model = (std::size_t)Figure::Bishop;
+		model = (int)Figure::Bishop;
 
 		assetBits.modelFiles[model] = true;
 
@@ -208,7 +208,7 @@ void Chess::RegisterEntities(ubrot::Tile &tile, ubrot::io::AssetFiles &assetBits
 		pos.y = i == 0 ? 1 : boardWidth;
 
 		auto& model(mgr.addComponent<ecs::CModel>(q).index);
-		model = (std::size_t)Figure::Queen;
+		model = (int)Figure::Queen;
 
 		assetBits.modelFiles[model] = true;
 
@@ -243,7 +243,7 @@ void Chess::RegisterEntities(ubrot::Tile &tile, ubrot::io::AssetFiles &assetBits
 		pos.y = i == 0 ? 1 : boardWidth;
 
 		auto& model(mgr.addComponent<ecs::CModel>(k).index);
-		model = (std::size_t)Figure::King;
+		model = (int)Figure::King;
 
 		assetBits.modelFiles[model] = true;
 
@@ -260,7 +260,7 @@ void Chess::RegisterEntities(ubrot::Tile &tile, ubrot::io::AssetFiles &assetBits
 		}
 	}
 
-	auto fieldModelIndex = ubrot::models::GetProdIndex(FieldModel);;
+	auto fieldModelIndex = ubrot::assets::GetProdIndex(FieldModel);
 	// Fields
 	for (auto i = 0; i < boardWidth; i++)
 	{
@@ -283,8 +283,8 @@ void Chess::RegisterEntities(ubrot::Tile &tile, ubrot::io::AssetFiles &assetBits
 			pos.y = i < boardWidth ? 1 : boardWidth;
 
 			auto& model(mgr.addComponent<ecs::CModel>(f).index);
-			model = fieldModelIndex;
-			mgr.addTag<ecs::TProcedural>(f); // indicate that this is not a "regular" model
+			model = -1 * (int)fieldModelIndex - 1;
+			// mgr.addTag<ecs::TProcedural>(f); // indicate that this is not a "regular" model
 
 			auto& color(mgr.addComponent<ecs::CColor>(f).color);
 			if ((i + j) % 2 == 1)
@@ -304,7 +304,10 @@ void Chess::RegisterEntities(ubrot::Tile &tile, ubrot::io::AssetFiles &assetBits
 
 void Chess::Process(ubrot::Scene &scene)
 {
-	m_input->Frame();
+	if (!m_input->Frame())
+	{
+		throw std::runtime_error("BLAHFDREIW");
+	}
 
 	auto& cam = scene.GetCamera();
 
@@ -316,6 +319,8 @@ void Chess::Process(ubrot::Scene &scene)
 		int mPosX = 0; // TODO als rückgabe ?
 		int mPosY = 0;
 		m_input->GetMouseLocation(mPosX, mPosY);
+		//mPosX = 960;
+		//mPosY = 540;
 
 		int intersect = -1;
 		auto& mgr = scene.GetTiles()[0].GetManager(); // TODO
@@ -324,19 +329,28 @@ void Chess::Process(ubrot::Scene &scene)
 		mgr.forEntitiesMatching<SCheckIntersect>(
 			[&](auto index, auto &cTrans, auto& cPos)
 		{
-			intersect = ubrot::physics::TestIntersection(
+			auto tmp = ubrot::physics::TestIntersection(
 				mPosX,
 				mPosY,
 				cTrans.position.x,
 				cTrans.position.y,
 				cTrans.position.z
 			);
+
+			if (tmp) {
+				intersect = (int)index;
+			}
 		});
 
 		if (intersect >= 0)
 		{
+			//ubrot::g_mouseX = 1920;
+			//ubrot::g_mouseY = 1080;
 			if (m_lastIntersect >= 0)
 			{
+				auto& color = mgr.getComponent<ecs::CColor>((EntityIndex)intersect);
+				color.color = DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+
 				if (IsValidMove(mgr, m_lastIntersect, intersect))
 				{
 					// Perform the move if the clicked figure/field represents a valid move
@@ -351,12 +365,20 @@ void Chess::Process(ubrot::Scene &scene)
 					m_lastIntersect = -1;
 				}
 			}
-			else if (IsValidSelection(mgr, intersect))
+			else if (true || IsValidSelection(mgr, intersect)) // TODO: !
 			{
+				auto& color = mgr.getComponent<ecs::CColor>((EntityIndex)intersect);
+				color.color = DirectX::XMFLOAT4(0.0f, 0.0f, 0.5f, 1.0f);
 				// If we did not select anything previously and this is a valid selection, save it
 				m_lastIntersect = intersect;
 			}
 		}
+	}
+
+	if (m_input->IsRightMouseButtonDown())
+	{
+		ubrot::g_mouseX = 0;
+		ubrot::g_mouseY = 0;
 	}
 
 }
@@ -364,7 +386,7 @@ void Chess::Process(ubrot::Scene &scene)
 
 void Chess::RegisterModels()
 {
-	ubrot::models::GetProdModel(FieldModel);
+	ubrot::assets::GetProdModel(FieldModel);
 }
 
 

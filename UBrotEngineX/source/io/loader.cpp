@@ -1,7 +1,6 @@
 #include "../../header/io/loader.h"
 #include "../../header/io/assetloader.h"
-#include "../../header/io/modelmanager.h"
-
+#include "../../header/io/assetmanager.h"
 #include "../../header/logic/gameobjects.h"
 
 #include <algorithm>
@@ -101,7 +100,7 @@ void ParseComponents(
 				tmp[2].GetFloat()
 			);
 		}
-		if (c.name == "model")
+		else if (c.name == "model")
 		{
 			auto& model(mgr.addComponent<ecs::CModel>(entity).index);
 			model = c.value.GetInt();
@@ -112,6 +111,13 @@ void ParseComponents(
 			assert(model < bits.modelFiles.size() && "Model count in scene meta is too small");
 
 			bits.modelFiles[model] = true;
+		}
+		else if (c.name == "texture")
+		{
+			auto &tex(mgr.addComponent<ecs::CTexture>(entity).index);
+			tex = c.value.GetInt();
+
+			bits.textureFiles[tex] = true;
 		}
 		else
 		{
@@ -180,6 +186,13 @@ bool LoadEntities(logic::GameLogic *logic, ecs::Manager<AllSettings> &mgr, Asset
 	return true;
 }
 
+bool LoadTextures()
+{
+	assets::AddTexture(0, LoadTexture("TODO"));
+
+	return true;
+}
+
 
 bool LoadModels(BitVec &modelBits, int sceneID)
 {
@@ -203,7 +216,7 @@ bool LoadModels(BitVec &modelBits, int sceneID)
 			continue;
 		}
 
-		if (!LoadModel(name, vertexIndex, i))
+		if (!LoadModel(name, vertexIndex, (int)i))
 		{
 			return false;
 		}
@@ -218,7 +231,7 @@ bool LoadModels(BitVec &modelBits, int sceneID)
 bool LoadModel(
 	std::string filename,
 	std::size_t vertexIndex,
-	std::size_t modelIndex
+	int modelIndex
 )
 {
 	auto result = false;
@@ -231,7 +244,7 @@ bool LoadModel(
 	// Load the model with the specified vertex type
 	ecs::MPL::VisitAt(tuple, vertexIndex, load);
 	// Add the model to the model manager
-	models::AddModel(modelIndex, model);
+	assets::AddModel(modelIndex, model);
 
 	return result;
 }

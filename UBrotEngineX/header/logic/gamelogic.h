@@ -60,6 +60,7 @@ protected:
 
 	// TODO: implement input class/namespace ?
 	std::unique_ptr<Input> m_input = std::make_unique<Input>(); // Hier oder in der erbenden klasse ?
+
 };
 
 };
