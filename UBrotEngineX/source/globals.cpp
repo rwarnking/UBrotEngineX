@@ -9,6 +9,6 @@ float SCREEN_NEAR = 0.1f;
 int SCREEN_WIDTH = 800; // TODO: find better solution for global settings
 int SCREEN_HEIGHT = 600;
 int g_mouseX = 0;
-int g_mouseY;
+int g_mouseY = 0;
 
 };

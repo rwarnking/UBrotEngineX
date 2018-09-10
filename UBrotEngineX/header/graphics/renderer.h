@@ -30,7 +30,7 @@ namespace ubrot
 // GLOBALS //
 /////////////
 const bool VSYNC_ENABLED = false;
-const bool FULL_SCREEN = false;
+const bool FULL_SCREEN = !false;
 extern float SCREEN_DEPTH;
 extern float SCREEN_NEAR;
 

@@ -221,15 +221,7 @@ bool Direct3D::Initialize(
 	swapChainDesc.OutputWindow = hwnd;
 	swapChainDesc.SampleDesc.Count = 1;
 	swapChainDesc.SampleDesc.Quality = 0;
-
-	if (fullscreen)
-	{
-		swapChainDesc.Windowed = false;
-	}
-	else
-	{
-		swapChainDesc.Windowed = true;
-	}
+	swapChainDesc.Windowed = true;
 
 	// TODO: better explanation or remove the comment?
 	// Set the scan line ordering and scaling to unspecified and discard the back buffer
@@ -279,6 +271,11 @@ bool Direct3D::Initialize(
 	backBufferPtr->Release();
 	backBufferPtr = nullptr;
 
+	// TODO: fixes fullscreen bug (where it seems like there is not backbuffer clearing)
+	if (fullscreen)
+	{
+		m_swapChain->SetFullscreenState(true, NULL);
+	}
 
 	// Initialize the depth buffer description
 	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
